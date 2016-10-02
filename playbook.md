@@ -41,10 +41,10 @@ int main()
 }
 ```
 
-##Algorithms:
+## Algorithms:
 
 From Past ACM Cheat Sheet 2014:
-Bitwise Operators 
+### Bitwise Operators 
 
 | operation | syntax |
 | --- | --- |
@@ -56,7 +56,7 @@ Bitwise Operators
 | complement | `~` |
 | all 1’s in binary | `-1` |
 
-### Macro to check if a bit is set
+##### Macro to check if a bit is set
 ```cpp
 #define CHECK_BIT(variable, position) ((variable) & (1 << (position)))
 ```
@@ -67,8 +67,8 @@ CHECK_BIT(temp, 3)
 ### Inversions
 ```cpp
 // Count the collisions problem
-// input:  RRRLLL
-// output: 9
+// Input:  RRRLLL
+// Output: 9
 #include<iostream>
 using namespace std;
 int main() {
@@ -84,11 +84,11 @@ int main() {
     return 0;
 }
 ```
-Mathematics
-Algebra 
-Sum of Powers
+### Mathematics
+#### Algebra 
+##### Sum of Powers
 
-### Fast Exponentiation
+##### Fast Exponentiation
 ```cpp 
 // This is a very good way to reduce the overhead of the <cmath> library pow function   
 double pow(double a, int n) {
@@ -98,7 +98,7 @@ double pow(double a, int n) {
     return t * t * pow(a, n%2);
 }
 ```
-### Greatest Common Divisor (GCD)           
+##### Greatest Common Divisor (GCD)           
 ```cpp
 int gcd(int a, int b) {
     while(b){int r = a % b; a = b; b = r;} 
@@ -106,14 +106,14 @@ int gcd(int a, int b) {
 }
 ```
 
-#### Euclidian Algorithm
+##### Euclidian Algorithm
 ```cpp
 while (a > 0 && b > 0)
 a > b ? a = a - (2*b); : b = b - (2*a);
 a > b ? return a; : return b;
 ```
-Primes
-Sieve of Eratosthenes
+### Primes
+##### Sieve of Eratosthenes
 ```cpp
 #include<vector>
 #include<cmath>
@@ -134,12 +134,12 @@ void sieve(int n) {
 int main() {
     num = vector<bool>(1000000,1);
     sieve(1000000);
-    for(int i=0;i<num.size();++i)
+    for(int i=0;i<num.size();++i) 
         if(num[i]) cout<<i<<endl;
 }
 ```
 
-O(sqrt(x)) Exhaustive Primality Test
+##### O(sqrt(x)) Exhaustive Primality Test
 
 ```cpp
 // Use the Sieve for numbers 1-1000000, 
@@ -161,20 +161,25 @@ bool IsPrimeSlow (LL x)
 }
 ```
 
-handling input
-Eating newline characters before getline()
-input:
+## Handling Input
+### Eating Newline Characters Before `getline()`
+
+##### Input:
+```
 3
 some string with spaces
 another string with spaces
 third string with spaces
+```
 
-output:
+##### Output:
+```
 some string with spaces
 another string with spaces
 third string with spaces
+```
 
-solution 1:
+##### solution 1:
 ```cpp
 #include<iostream>
 //#include <sstream>
@@ -195,7 +200,8 @@ int main() {
   return 0;
 }
 ```
-solution 2:
+
+##### solution 2:
 ```cpp
 #include<iostream>
 #include <sstream>
@@ -213,14 +219,19 @@ int main() {
   return 0;
 }
 ```
-Set stream to not ignore whitespace
-input:
+### Set stream to not ignore whitespace
+
+##### Input:
+```
 a b c d
+```
 
-output:
+##### Output:
+```
 0 1 2 3 4 5 6 7
+```
 
-solution 1 (faster):
+##### Solution 1 (faster):
 ```cpp
 #include<iostream>
 using namespace std;
@@ -231,7 +242,8 @@ int main(){
   return 0;
 }
 ```
-solution 2:
+
+##### Solution 2:
 ```cpp
 #include<iostream>
 using namespace std;
@@ -243,7 +255,7 @@ int main(){
    return 0;
 }
 ```
-toBase
+### `toBase()`
 ```cpp
 // Assumes “int number” parameter is base10
 string toBase(int number, int base) {
@@ -255,14 +267,20 @@ string toBase(int number, int base) {
   }
   return result;
 }
-isPalindrome
+```
+
+### `isPalindrome()`
+```
 bool isPalindrome(string s) {
   for(int i=0,max=s.length()/2,len=s.length()-1;i<max;++i)
     if(s[i]!=s[len-i]) return false;
   return true;
 }
 ```
-Finding all the Armstrong Numbers up to 1000
+
+### Finding All The Armstrong Numbers Up To 1000
+
+```
 /*
 Problem: Find all Armstrong numbers up to 1000
 
@@ -277,6 +295,7 @@ Steps:
 3. If the sum is same as the n-digit number, it is an Armstrong number (i.e. for 3-digit number 153: 1^3 + 5^3 + 3^3 = 153)
 4. Continue loop and test the next number
 */
+```
 ```cpp
 #include <iostream>
 using namespace std;
@@ -346,7 +365,10 @@ Enter highest value to test: 1000
 
 0 1 2 3 4 5 6 7 8 9 153 370 371 407
 */
-Finding Factorial Iteratively and Recursively
+```
+
+### Finding Factorial Iteratively and Recursively
+```
 /*
 The factorial of a non-negative integer 'n', denoted 
 by n!, is the product of all positive integers less 
@@ -354,6 +376,7 @@ than or equal to n.
 For example: 5! = 5 x 4 x 3 x 2 x 1 = 120
 */
 ```
+
 ```cpp
 #include <iostream>
 using namespace std;
@@ -392,8 +415,8 @@ Using recursion, factorial is 5040
 Using iteration, factorial is 5040
 */
 ```
-Finding GCD Recursively
-
+### Finding GCD Recursively
+```
 /*
 The greatest common divisor (gcd) also known as the
 greatest common factor (gcf) or highest common factor
@@ -409,6 +432,7 @@ Steps:
 4. Else if either of the division produces a non-zero remainder, decrement d  
 5. Repeat step 3-4 until a GCD is found.  
 */
+```
 ```cpp
 #include <iostream>
 using namespace std;
@@ -443,7 +467,8 @@ Enter second number: 42
 GCD is 14
 */
 ```
-Determining if a Number is Prime Iteratively 
+### Determining if a Number is Prime Iteratively 
+```
 /*
 A prime number (or prime) is a natural number greater
 than 1 that has no positive divisors other than 1 and
@@ -456,6 +481,7 @@ Steps:
 3. Divide n by i, if the remainder is non-zero the number is not prime, exit  
 4. Repeat step 3 until we reach 1, if all division upto this point resulted in zero remainder, the number is prime.  
 */
+```
 ```cpp
 #include <iostream>
 #include <cmath>
@@ -492,7 +518,8 @@ Enter a number: 6
 Not Prime
 */
 ```
-Finding the Largest Palindromic Number Formed by Multiplying Two 3-Digit Numbers.
+### Finding the Largest Palindromic Number Formed by Multiplying Two 3-Digit Numbers.
+```
 /*
 Problem: Find the largest palindromic number formed by
 multiplying two 3-digit numbers.
@@ -510,6 +537,7 @@ Steps:
 6. Repeat steps 2-5 for all combinations of i * j, where i and j range from 100-999  
 7. The largest value at the end is the required largest value.  
 */
+```
 ```cpp
 #include <iostream>
 using namespace std;
@@ -561,7 +589,8 @@ int main()
 Largest palindrome is 906609
 */
 ```
-Finding the Largest Prime Factor of 600,851,475,143
+### Finding the Largest Prime Factor of 600,851,475,143
+```
 /*
 The prime factors of a positive integer are the prime
 numbers that divide that integer exactly, without 
@@ -575,6 +604,7 @@ Steps:
 3. Divide n by s, if it leaves a remainder equal to zero, s is the prime factor, else continue to step 4  
 4. Decrement by 1, repeat step 3 until a prime factor is found.  
 */
+```
 ```cpp
 #include <iostream>
 #include <cmath>
@@ -617,7 +647,8 @@ What is the largest prime factor of 600851475143?
 Answer: 6857
 */
 ```
-Finding the Transpose of a Matrix with Multidimensional Arrays
+### Finding the Transpose of a Matrix with Multidimensional Arrays
+```
 /*
 Problem: To find the transpose of a given matrix.
 
@@ -630,6 +661,7 @@ Steps:
 2. Copy value at rth row and cth column in matrix A to the cth row and rth column of result matrix (i.e. R[c][r] = A[r][c])  
 3. Repeat step 2 for each element of matrix A  
 */
+```
 ```cpp
 #include <iostream>
 using namespace std;
@@ -726,7 +758,8 @@ Result of transpose...
 2 4 6
 */
 ```
-Finding the Transpose of a Matrix with a Single Dimensional Array
+### Finding the Transpose of a Matrix with a Single Dimensional Array
+```
 /*
 Problem: To find the transpose of a given matrix.
 
@@ -740,6 +773,7 @@ Steps:
 2. Copy value at rth row and cth column in matrix A to the cth row and rth column of result matrix (i.e. R[c][r] = A[r][c])  
 3. Repeat step 2 for each element of matrix A  
 */
+```
 ```cpp
 #include <iostream>
 using namespace std;
@@ -821,7 +855,8 @@ Result of transpose...
 2 4 6
 */
 ```
-Iterative Binary Search
+### Iterative Binary Search
+```
 /*
 Problem: Implement an Iterative Binary Search.
 
@@ -846,6 +881,7 @@ Steps:
     2. Searched value is greater than the middle element. In this case go to step 1 for the part of the array after the middle element.  
 4. Iteration should stop when the searched element is found or when the sub-array has no elements. In the second case, we can conclude that the searched value is not present in the array.  
 */
+```
 ```cpp
 #include <iostream>
 #include <cstdlib>
@@ -953,7 +989,8 @@ The text you entered is: inky pinky ponky
 Your text with vowels removed is: nky pnky pnky
 */
 ```
-Finding the Roots of a Quadratic Equation
+### Finding the Roots of a Quadratic Equation
+```
 /*
 Problem: Find the roots of a given quadratic equation.
 
@@ -975,6 +1012,7 @@ Steps:
     2. If the discriminant is zero, then there is exactly one distinct real root, sometimes called a double root  
     3. If the discriminant is negative, then there are no real roots. Rather, there are two distinct (non-real) complex roots, which are complex conjugates of each other.  
 */
+```
 ```cpp
 #include <iostream>
 #include <cmath>
@@ -1043,7 +1081,7 @@ Root 1 = 5
 Root 2 = -3
 */
 ```
-Finding the Sum of Even-Valued Terms in the Fibonacci Sequence Less than 4 Million
+### Finding the Sum of Even-Valued Terms in the Fibonacci Sequence Less than 4 Million
 ```cpp
 #include <iostream>
 using namespace std;
@@ -1074,7 +1112,7 @@ int main()
 Answer: 4613732
 */
 ```
-Finding the Sum of Even Element Values in a Matrix
+### Finding the Sum of Even Element Values in a Matrix
 ```cpp
 #include <iostream>
 using namespace std;
@@ -1113,7 +1151,8 @@ int main()
 Sum of evens: 580
 */
 ```
-The Tower of Hanoi
+### The Tower of Hanoi
+```
 /* 
 The Tower of Hanoi is a mathematical game or puzzle. It
 consists of three rods, and a number of disks of different
@@ -1150,6 +1189,7 @@ procedure is a finite number of steps, since at some point
 the algorithm will be required for n = 1. This step, moving 
 a single disc from peg A to peg B, is trivial.
 */
+```
 ```cpp
 #include <iostream>
 using namespace std;
@@ -1200,7 +1240,8 @@ Move ring 2 from C to B
 Move ring 1 from A to B
 */
 ```
-Kruskal’s Algorithm
+### Kruskal’s Algorithm
+```
 /*
 Kruskal's algorithm is an algorithm in graph theory that
 finds a minimum spanning tree for a connected weighted
@@ -1223,6 +1264,7 @@ Steps:
 At the termination of the algorithm, the forest has only one
 component and forms a minimum spanning tree of the graph.
 */
+```
 ```cpp
 #include <iostream>
 #include <algorithm>
@@ -1354,7 +1396,7 @@ Edge (1, 2) with weight 6 is selected
 Edge (1, 3) with weight 7 is selected
 */
 ```
-Finding the Angle between the Hour Hand and the Minute Hand on an Analog Clock
+### Finding the Angle between the Hour Hand and the Minute Hand on an Analog Clock
 ```cpp
 #include <iostream>
 #include <cmath>
@@ -1408,7 +1450,17 @@ Enter minute (0 - 59): 0
 Angle between hour hand and minute hand: 180 degrees
 */
 ```
-What is the smallest positive number that is evenly divisible by all of the numbers from 1 to 20?
+### What is the smallest positive number that is evenly divisible by all of the numbers from 1 to 20?
+```
+The following algorithm can be greatly optimized.
+If n%20==0 then n%1==0, n%2==0, n%4==0, n%5==0, n%10==0.
+If n%18==0 then n%3==0, n%6==0, n%9==0
+If n%16==0 then n%8==0
+If n%14==0 then n%7==0
+The only values that are necessary to check are:
+20, 19, 18, 17, 16, 15, 14, 13, 12, 11
+An additional optimization is to divide from largest devisior to smallest as it is more likely for a number to be divisible by a smaller divisor so 20->11 is faster than 11->20.
+```
 ```cpp
 #include <iostream>
 #include <ctime>
@@ -1418,19 +1470,18 @@ int main()
 {
     int n, i, t;
     bool found = false;
-
-    for (n = 1; true; ++n)
+    for (n = 1; !found; ++n)
     {
         found = true;
-        for (int i = 1; i <= 20; ++i)
+        //for (int i = 1; i <= 20; ++i)
+        for (int i = 20; i >= 11; --i) // Optimization mentioned above
         {
-            if (n % i != 0) 
+            if (!(n%i)) 
             {
                 found = false;
                 break;
             }
         }
-        if (found) break;
     }
     cout << n << endl;
     
@@ -1446,10 +1497,11 @@ int main()
 
 232792560
 The operation took 3.28 seconds.
+//It would run in about 1.7 seconds with the optimization.
 */
 ```
-Samples
-Hello World
+## Samples
+### Hello World
 ```cpp
 #include <iostream>
 #include <cstdlib>
@@ -1462,64 +1514,74 @@ cout << “Hello World” << endl;
 return 0;
 }
 ```
-Center Point of Arbitrary Points
+### Center Point of Arbitrary Points
 ```cpp
 double centerX = sum(AllXPoints[])
 double centerY = sum(AllYPoints[])
 ```
 
-Numeric - bool isdigit(char)
-Alphanumeric - bool isalnum(char)
+### Numeric - bool isdigit(char)
+### Alphanumeric - bool isalnum(char)
 
-Input Handling
+## Input Handling
 
-Includes
+### Includes
 ```cpp
 #include<sstream>
 ```
-String Stream
+- String Stream
 ```cpp
 #include<algorithm>
 ```
-remove_if
-Helpful Functions
-Character Checking
-Check if a character is
-Alphabetic - `bool isalpha(char)`
-Numeric - `bool isdigit(char)`
-Alphanumeric - `bool isalnum(char)`
+- remove_if
+## Helpful Functions
+### Character Checking
+#### Check if a character is
+- Alphabetic - `bool isalpha(char)`
+- Numeric - `bool isdigit(char)`
+- Alphanumeric - `bool isalnum(char)`
 
-Programming tricks
-Compile and Run (one line)
+## Programming tricks
+### Compile and Run (one line)
 ```
 g++ myFile.cpp && ./a.out
 ```
-Use file for stdin
+### Use file for stdin
 ```
 ./a.out < file.in
 ```
-Send stdout to file
+### Send stdout to file
 ```
 ./a.out > file.out
 ```
-
-
-Misc.
-*nix - Time Command
-To use the command, simply precede any command by the word time, such as:
-time ls
-When the command completes, time will report how long it took to execute the ls command in terms of user CPU time, system CPU time, and real time. The output format varies between different versions of the command, and some give additional statistics
-$ time host wikipedia.org
-wikipedia.org has address 207.142.131.235
-0.000u 0.000s 0:00.17 0.0% 0+0k 0+0io 0pf+0w
-$
-For more info, type “man time”
+### Simple complile and test script
+```sh
+rm -f $1;
+g++ $1.cpp -o $1;
+$1 < $1.in;
+```
+>Note the test input must be named `<executablename>.in`
 
 
 
+## Misc.
+### *nix - Time Command
+>To use the command, simply precede any command by the word time, such as:
+>>time ls  
+
+>When the command completes, time will report how long it took to execute the ls command in terms of user CPU time, system CPU time, and real time. The output format varies between different versions of the command, and some give additional statistics  
+>>$ time host wikipedia.org  
+>>wikipedia.org has address 207.142.131.235  
+>>0.000u 0.000s 0:00.17 0.0% 0+0k 0+0io 0pf+0w  
+>>$  
+
+>For more info, type “man time”  
 
 
-Map-of-maps iteration
+
+
+
+### Map-of-maps iteration
 ```cpp
 #include<map>
 #include<utility>
