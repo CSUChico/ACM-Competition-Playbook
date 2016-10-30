@@ -64,7 +64,8 @@ int main()
 
 From Standford ICPC Playbook:
 ###BIT.cc
-```#include <iostream>
+```cpp
+#include <iostream>
 using namespace std;
 
 #define LOGSZ 17
@@ -106,7 +107,7 @@ int getind(int x) {
 }
 ```
 ###BellmanFord.cc
-```
+```cpp
 // This function runs the Bellman-Ford algorithm for single source
 // shortest paths with negative edge weights.  The function returns
 // false if a negative weight cycle is detected.  Otherwise, the
@@ -158,7 +159,7 @@ bool BellmanFord (const VVT &w, VT &dist, VI &prev, int start){
 }
 ```
 ###CSP.cc
-```
+```cpp
 // Constraint satisfaction problems
 
 #include <cstdlib>
@@ -315,7 +316,7 @@ void BacktrackSearch(int num_var) {
 }
 ```
 ###ConvexHull.cc
-```
+```cpp
 // Compute the 2D convex hull of a set of points using the monotone chain
 // algorithm.  Eliminate redundant points from the hull if REMOVE_REDUNDANT is 
 // #defined.
@@ -424,7 +425,7 @@ int main() {
 // END CUT
 ```
 ###Dates.cc
-```
+```cpp
 // Routines for performing computations on dates.  In these routines,
 // months are expressed as integers from 1 to 12, days are expressed
 // as integers from 1 to 31, and years are expressed as 4-digit
@@ -483,7 +484,7 @@ int main (int argc, char **argv){
 }
 ```
 ###Dates.java
-```
+```java
 // Example of using Java's built-in date calculation routines
 
 import java.text.SimpleDateFormat;
@@ -508,7 +509,7 @@ public class Dates {
 }
 ```
 ###DecFormat.java
-```
+```java
 // examples for printing floating point numbers
 
 import java.util.*;
@@ -590,7 +591,7 @@ public class DecFormat {
 }
 ```
 ###Delaunay.cc
-```
+```cpp
 // Slow but simple Delaunay triangulation. Does not handle
 // degenerate cases (from O'Rourke, Computational Geometry in C)
 //
@@ -657,7 +658,7 @@ int main()
 }
 ```
 ###DijkstraFloyd.cc
-```
+```cpp
 #include <iostream>
 #include <queue>
 #include <cmath>
@@ -735,7 +736,7 @@ bool FloydWarshall (VVT &w, VVI &prev){
 }
 ```
 ###Dinic.cc
-```
+```cpp
 // Adjacency list implementation of Dinic's blocking flow algorithm.
 // This is very fast in practice, and only loses to push-relabel flow.
 //
@@ -876,7 +877,7 @@ int main()
 )
 ```
 ###Euclid
-```
+```cpp
 // This is a collection of useful code for solving problems that
 // involve modular linear equations.  Note that all of the
 // algorithms described here work on nonnegative integers.
@@ -1036,7 +1037,7 @@ int main() {
 }
 ```
 ###EulerianPath.cc
-```
+```cpp
 struct Edge;
 typedef list<Edge>::iterator iter;
 
@@ -1079,7 +1080,7 @@ void add_edge(int a, int b)
 }
 ```
 ###FFT.cc
-```
+```cpp
 // Convolution using the fast Fourier transform (FFT).
 //
 // INPUT:
@@ -1184,7 +1185,7 @@ int main() {
 }
 ```
 ###FFT_new.cc
-```
+```cpp
 #include <cassert>
 #include <cstdio>
 #include <cmath>
@@ -1321,7 +1322,7 @@ int main(void)
 }
 ```
 FastDijkstra.cc
-```
+```cpp
 // Implementation of Dijkstra's algorithm using adjacency lists
 // and priority queue for efficiency.
 //
@@ -1391,7 +1392,7 @@ Expected:
 */
 ```
 ###FastExpo.cc
-```
+```cpp
 /*
 Uses powers of two to exponentiate numbers and matrices. Calculates
 n^k in O(log(k)) time when n is a number. If A is an n x n matrix,
@@ -1477,8 +1478,8 @@ int main()
   }
 }
 ```
-GaussJordan.cc
-```
+###GaussJordan.cc
+```cpp
 // Gauss-Jordan elimination with full pivoting.
 //
 // Uses:
@@ -1587,7 +1588,7 @@ int main() {
 }
 ```
 Geom3D.java
-```
+```java
 public class Geom3D {
   // distance from point (x, y, z) to plane aX + bY + cZ + d = 0
   public static double ptPlaneDist(double x, double y, double z,
@@ -1646,7 +1647,7 @@ public class Geom3D {
 }
 ```
 ###Geometry.cc
-```
+```cpp
 // C++ routines for computational geometry.
 
 #include <iostream>
@@ -1950,7 +1951,7 @@ int main() {
 }
 ```
 ###GraphCutInference.cc
-```
+```cpp
 // Special-purpose {0,1} combinatorial optimization solver for
 // problems of the following by a reduction to graph cuts:
 //
@@ -2112,7 +2113,7 @@ int main() {
 }
 ```
 ###IO.cc
-```
+```cpp
 #include <iostream>
 #include <iomanip>
 
@@ -2141,7 +2142,7 @@ int main()
 }
 ```
 ###JavaGeometry.java
-```
+```java
 // In this example, we read an input file containing three lines, each
 // containing an even number of doubles, separated by commas.  The first two
 // lines represent the coordinates of two polygons, given in counterclockwise 
@@ -2287,8 +2288,8 @@ public class JavaGeometry {
     }
 }
 ```
-KDTree.cc
-```
+###KDTree.cc
+```cpp
 // -----------------------------------------------------------------
 // A straightforward, but probably sub-optimal KD-tree implmentation
 // that's probably good enough for most things (current it's a
@@ -2499,7 +2500,7 @@ int main()
 // --------------------------------------------------------------------------
 ```
 ###KMP.cc
-```
+```cpp
 /*
 Searches for the string w in the string s (of length k). Returns the
 0-based index of the first match (k if no match is found). Algorithm
@@ -2566,7 +2567,7 @@ int main()
 }
 ```
 ###Kruskal.cc
-```
+```cpp
 /*
 Uses Kruskal's Algorithm to calculate the weight of the minimum spanning
 forest (union of minimum spanning trees of each connected component) of
@@ -2658,7 +2659,7 @@ int main()
 }
 ```
 ###LCA.cc
-```
+```cpp
 const int max_nodes, log_max_nodes;
 int num_nodes, log_num_nodes, root;
 
@@ -2745,7 +2746,7 @@ int main(int argc,char* argv[])
 }
 ```
 LCS.cc
-```
+```cpp
 /*
 Calculates the length of the longest common subsequence of two vectors.
 Backtracks to find a single subsequence or all subsequences. Runs in
@@ -2854,7 +2855,7 @@ int main()
 }
 ```
 ###LatLong.cc
-```
+```cpp
 /*
 Converts from rectangular coordinates to latitude/longitude and vice
 versa. Uses degrees (not radians).
@@ -2910,7 +2911,7 @@ int main()
 }
 ```
 ###LogLan.java
-```
+```java
 // Code which demonstrates the use of Java's regular expression libraries.
 // This is a solution for 
 //
@@ -3002,7 +3003,7 @@ public class LogLan {
 }
 ```
 ###LongestIncreasingSubstring
-```
+```cpp
 // Given a list of numbers of length n, this routine extracts a 
 // longest increasing subsequence.
 //
@@ -3053,7 +3054,7 @@ VI LongestIncreasingSubsequence(VI v) {
 }
 ```
 ###MaxBipartiteMatching
-```
+```cpp
 // This code performs maximum bipartite matching.
 //
 // Running time: O(|E| |V|) -- often much faster in practice
@@ -3096,8 +3097,8 @@ int BipartiteMatching(const VVI &w, VI &mr, VI &mc) {
   return ct;
 }
 ```
-MaxFlow.cc
-```
+###MaxFlow.cc
+```cpp
 // Adjacency matrix implementation of Dinic's blocking flow algorithm.
 //
 // Running time:
@@ -3228,7 +3229,7 @@ int main() {
 // END CUT
 ```
 ###MaxFlow.java
-```
+```java
 // Fattest path network flow algorithm using an adjacency matrix.
 //
 // Running time: O(|E|^2 log (|V| * U), where U is the largest
@@ -3348,7 +3349,7 @@ public class MaxFlow {
 }
 ```
 ###MillerRabin.cc
-```
+```cpp
 // Randomized Primality Test (Miller-Rabin):
 //   Error rate: 2^(-TRIAL)
 //   Almost constant time. srand is needed
@@ -3412,7 +3413,7 @@ bool IsPrimeFast(LL n, int TRIAL)
 }
 ```
 ###MinCostMatching.cc
-```
+```cpp
 //////////////////////////////////////////////////////////////////////
 // Min cost bipartite matching via shortest augmenting paths
 //
@@ -3544,7 +3545,7 @@ double MinCostMatching(const VVD &cost, VI &Lmate, VI &Rmate) {
 }
 ```
 ###MinCostMaxFlow.cc
-```
+```cpp
 // Implementation of min cost max flow algorithm using adjacency
 // matrix (Edmonds and Karp 1972).  This implementation keeps track of
 // forward and reverse edges separately (so you can set cap[i][j] !=
@@ -3681,7 +3682,7 @@ int main() {
 // END CUT
 ```
 ###MinCostMaxFlow.java
-```
+```java
 // Min cost max flow algorithm using an adjacency matrix.  If you
 // want just regular max flow, setting all edge costs to 1 gives
 // running time O(|E|^2 |V|).
@@ -3816,7 +3817,7 @@ public class MinCostMaxFlow {
 }
 ```
 ###MinCut.cc
-```
+```cpp
 // Adjacency matrix implementation of Stoer-Wagner min cut algorithm.
 //
 // Running time:
@@ -3893,7 +3894,7 @@ int main() {
 // END CUT
 ```
 ###Prim.cc
-```
+```cpp
 // This function runs Prim's algorithm for constructing minimum
 // weight spanning trees.
 //
@@ -3978,8 +3979,8 @@ int main(){
     cout << edges[i].first << " " << edges[i].second << endl;
 }
 ```
-Primes.cc
-```
+###Primes.cc
+```cpp
 // O(sqrt(x)) Exhaustive Primality Test
 #include <cmath>
 #define EPS 1e-7
@@ -4033,7 +4034,7 @@ bool IsPrimeSlow (LL x)
 //    The largest prime smaller than 1000000000000000000 is 999999999999999989.
 ```
 ###PushRelabel.cc
-```
+```cpp
 // Adjacency list implementation of FIFO push relabel maximum flow
 // with the gap relabeling heuristic.  This implementation is
 // significantly faster than straight Ford-Fulkerson.  It solves
@@ -4173,7 +4174,7 @@ int main() {
 // END CUT
 ```
 ###RandomSTL.cc
-```
+```cpp
 // Example for using stringstreams and next_permutation
 
 #include <algorithm>
@@ -4228,7 +4229,7 @@ int main(void){
 }
 ```
 ###ReducedRowEchelonForm.cc
-```
+```cpp
 // Reduced row echelon form via Gauss-Jordan elimination 
 // with partial pivoting.  This can be used for computing
 // the rank of a matrix.
@@ -4305,7 +4306,7 @@ int main() {
 }
 ```
 ###SCC.cc
-```
+```cpp
 #include<memory.h>
 struct edge{int e, nxt;};
 int V, E;
@@ -4344,7 +4345,7 @@ void SCC()
 }
 ```
 ###SegmentTreeLazy.java
-```
+```java
 public class SegmentTreeRangeUpdate {
 	public long[] leaf;
 	public long[] update;
@@ -4414,7 +4415,7 @@ public class SegmentTreeRangeUpdate {
 }
 ```
 ###Simplex.cc
-```
+```cpp
 // Two-phase simplex algorithm for solving linear programs of the form
 //
 //     maximize     c^T x
@@ -4541,7 +4542,7 @@ int main() {
 }
 ```
 ###SuffixArray.cc
-```
+```cpp
 // Suffix array construction in O(L log^2 L) time.  Routine for
 // computing the length of the longest common prefix of any two
 // suffixes in O(log L) time.
@@ -4655,7 +4656,7 @@ int main() {
 // END CUT
 ```
 ###TopologicalSort.cc
-```
+```cpp
 // This function uses performs a non-recursive topological sort.
 //
 // Running time: O(|V|^2).  If you use adjacency lists (vector<map<int> >),
@@ -4708,7 +4709,7 @@ bool TopologicalSort (const VVI &w, VI &order){
 }
 ```
 ###UnionFind.cc
-```
+```cpp
 #include <iostream>
 #include <vector>
 using namespace std;
@@ -4727,7 +4728,7 @@ int main()
 }
 ```
 ###Splay
-```
+```cpp
 #include <cstdio>
 #include <algorithm>
 using namespace std;
