@@ -1,5 +1,5 @@
 /* The info will definitely need to be organized */
-###VimrcSettings:
+### VimrcSettings:
 ```
 :set tabstop=4
 :set softtabstop=4
@@ -20,7 +20,7 @@ endfunc
 nnoremap <C-m> :call NumberToggle()<cr>
 ```
 
-### Templates:
+## Templates:
 ```cpp
 //sstream template for parsing input
 #include <iostream>
@@ -62,8 +62,250 @@ int main()
 ```
 ## Algorithms:
 
-From Standford ICPC Playbook:
-###BIT.cc
+### Breadth First Search(BFS)
+```cpp  
+#include <list>
+#include <vector>
+#include <queue>
+#include <climits>
+
+using namespace std;
+
+vector<list<int>> adjacencyList;
+vector<int> dist;
+vector<int> parent;
+
+void BFS(int start)
+{
+  vector<char> color(adjacencyList.size());
+  for(unsigned int i = 0; i < adjacencyList.size(); i++)
+  {
+    color[i] = 'w';
+    dist[i] = INT_MAX;
+    parent[i] = -1;
+  }
+  color[start] = 'g';
+  dist[start] = 0;
+  queue<int> Q;
+  Q.push(start);
+  int current;
+  while(!Q.empty())
+  {
+    current = Q.front();
+    Q.pop();
+    for(int i : adjacencyList[current])
+    {
+      if(color[i] == 'w')
+      {
+        color[i] = 'g';
+        dist[i] = dist[current] + 1;
+        parent[i] = current;
+        Q.push(i);
+      }
+    }
+    color[current] = 'b';
+  }
+}
+```
+### Depth First Search(DFS)
+```cpp  
+#include <vector>
+#include <list>
+
+using namespace std;
+
+vector<list<int>> adjacencyList;
+vector<int> parent;
+vector<int> startTime;
+vector<int> finishTime;
+vector<char> color;
+
+
+void DFS_Visit(int current, int & time)
+{
+  color[current] = 'g';
+  time++;
+  startTime[current] = time;
+  for(int i : adjacencyList[current])
+  {
+    if(color[i] == 'w')
+    {
+      parent[i] = current;
+      DFS_Visit(i, time);
+    }
+  }
+  color[current] = 'b';
+  time++;
+  finishTime[current] = time;
+}
+
+void DFS()
+{
+  for(int i = 0; i < adjacencyList.size(); i++)
+  {
+    color[i] = 'w';
+    parent[i] = -1;
+  }
+  int time = 0;
+  for(int i = 0; i < adjacencyList.size(); i++)
+  {
+    if(color[i] == 'w')
+    {
+      DFS_Visit(i, time);
+    }
+  }
+}
+```
+### FastDijkstra.cc
+```cpp
+// Implementation of Dijkstra's algorithm using adjacency lists
+// and priority queue for efficiency.
+//
+// Running time: O(|E| log |V|)
+
+#include <queue>
+#include <cstdio>
+
+using namespace std;
+const int INF = 2000000000;
+typedef pair<int, int> PII;
+
+int main() {
+
+	int N, s, t;
+	scanf("%d%d%d", &N, &s, &t);
+	vector<vector<PII> > edges(N);
+	for (int i = 0; i < N; i++) {
+		int M;
+		scanf("%d", &M);
+		for (int j = 0; j < M; j++) {
+			int vertex, dist;
+			scanf("%d%d", &vertex, &dist);
+			edges[i].push_back(make_pair(dist, vertex)); // note order of arguments here
+		}
+	}
+
+	// use priority queue in which top element has the "smallest" priority
+	priority_queue<PII, vector<PII>, greater<PII> > Q;
+	vector<int> dist(N, INF), dad(N, -1);
+	Q.push(make_pair(0, s));
+	dist[s] = 0;
+	while (!Q.empty()) {
+		PII p = Q.top();
+		Q.pop();
+		int here = p.second;
+		if (here == t) break;
+		if (dist[here] != p.first) continue;
+
+		for (vector<PII>::iterator it = edges[here].begin(); it != edges[here].end(); it++) {
+			if (dist[here] + it->first < dist[it->second]) {
+				dist[it->second] = dist[here] + it->first;
+				dad[it->second] = here;
+				Q.push(make_pair(dist[it->second], it->second));
+			}
+		}
+	}
+
+	printf("%d\n", dist[t]);
+	if (dist[t] < INF)
+		for (int i = t; i != -1; i = dad[i])
+			printf("%d%c", i, (i == s ? '\n' : ' '));
+	return 0;
+}
+
+/*
+Sample input:
+5 0 4
+2 1 2 3 1
+2 2 4 4 5
+3 1 4 3 3 4 1
+2 0 1 2 3
+2 1 5 2 1
+Expected:
+5
+4 2 3 0
+*/
+```
+### DijkstraFloyd.cc
+```cpp
+#include <iostream>
+#include <queue>
+#include <cmath>
+#include <vector>
+
+using namespace std;
+
+typedef double T;
+typedef vector<T> VT;
+typedef vector<VT> VVT;
+
+typedef vector<int> VI;
+typedef vector<VI> VVI;
+
+// This function runs Dijkstra's algorithm for single source
+// shortest paths.  No negative cycles allowed!
+//
+// Running time: O(|V|^2)
+//
+//   INPUT:   start, w[i][j] = cost of edge from i to j
+//   OUTPUT:  dist[i] = min weight path from start to i
+//            prev[i] = previous node on the best path from the
+//                      start node   
+
+void Dijkstra (const VVT &w, VT &dist, VI &prev, int start){
+  int n = w.size();
+  VI found (n);
+  prev = VI(n, -1);
+  dist = VT(n, 1000000000);
+  dist[start] = 0;
+  
+  while (start != -1){
+    found[start] = true;
+    int best = -1;
+    for (int k = 0; k < n; k++) if (!found[k]){
+      if (dist[k] > dist[start] + w[start][k]){
+        dist[k] = dist[start] + w[start][k];
+        prev[k] = start;
+      }
+      if (best == -1 || dist[k] < dist[best]) best = k;
+    }
+    start = best;    
+  }
+}
+
+// This function runs the Floyd-Warshall algorithm for all-pairs
+// shortest paths.  Also handles negative edge weights.  Returns true
+// if a negative weight cycle is found.
+//
+// Running time: O(|V|^3)
+//
+//   INPUT:  w[i][j] = weight of edge from i to j
+//   OUTPUT: w[i][j] = shortest path from i to j
+//           prev[i][j] = node before j on the best path starting at i
+
+bool FloydWarshall (VVT &w, VVI &prev){
+  int n = w.size();
+  prev = VVI (n, VI(n, -1));
+  
+  for (int k = 0; k < n; k++){
+    for (int i = 0; i < n; i++){
+      for (int j = 0; j < n; j++){
+        if (w[i][j] > w[i][k] + w[k][j]){
+          w[i][j] = w[i][k] + w[k][j];
+          prev[i][j] = k;
+        }
+      }
+    }
+  }
+ 
+  // check for negative weight cycles
+  for(int i=0;i<n;i++)
+    if (w[i][i] < 0) return false;
+  return true;
+}
+```
+
+### BIT.cc
 ```cpp
 #include <iostream>
 using namespace std;
@@ -106,7 +348,7 @@ int getind(int x) {
   return idx;
 }
 ```
-###BellmanFord.cc
+### BellmanFord.cc
 ```cpp
 // This function runs the Bellman-Ford algorithm for single source
 // shortest paths with negative edge weights.  The function returns
@@ -158,7 +400,7 @@ bool BellmanFord (const VVT &w, VT &dist, VI &prev, int start){
   return true;
 }
 ```
-###CSP.cc
+### CSP.cc
 ```cpp
 // Constraint satisfaction problems
 
@@ -315,7 +557,7 @@ void BacktrackSearch(int num_var) {
   }
 }
 ```
-###ConvexHull.cc
+### ConvexHull.cc
 ```cpp
 // Compute the 2D convex hull of a set of points using the monotone chain
 // algorithm.  Eliminate redundant points from the hull if REMOVE_REDUNDANT is 
@@ -424,7 +666,7 @@ int main() {
 
 // END CUT
 ```
-###Dates.cc
+### Dates.cc
 ```cpp
 // Routines for performing computations on dates.  In these routines,
 // months are expressed as integers from 1 to 12, days are expressed
@@ -483,114 +725,8 @@ int main (int argc, char **argv){
     << day << endl;
 }
 ```
-###Dates.java
-```java
-// Example of using Java's built-in date calculation routines
 
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-public class Dates {
-    public static void main(String[] args) {
-        Scanner s = new Scanner(System.in);
-        SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy");
-        while (true) {
-            int n = s.nextInt();
-            if (n == 0) break;
-            GregorianCalendar c = new GregorianCalendar(n, Calendar.JANUARY, 1);
-            while (c.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY) 
-		c.add(Calendar.DAY_OF_YEAR, 1);
-            for (int i = 0; i < 12; i++) {
-                System.out.println(sdf.format(c.getTime()));
-                while (c.get(Calendar.MONTH) == i) c.add(Calendar.DAY_OF_YEAR, 7);
-            }
-        }
-    }
-}
-```
-###DecFormat.java
-```java
-// examples for printing floating point numbers
-
-import java.util.*;
-import java.io.*;
-import java.text.DecimalFormat;
-
-public class DecFormat {
-    public static void main(String[] args) {
-        DecimalFormat fmt;
-
-        // round to at most 2 digits, leave of digits if not needed
-        fmt = new DecimalFormat("#.##");
-        System.out.println(fmt.format(12345.6789)); // produces 12345.68
-        System.out.println(fmt.format(12345.0)); // produces 12345
-        System.out.println(fmt.format(0.0)); // produces 0
-        System.out.println(fmt.format(0.01)); // produces .1
-
-        // round to precisely 2 digits
-        fmt = new DecimalFormat("#.00");
-        System.out.println(fmt.format(12345.6789)); // produces 12345.68
-        System.out.println(fmt.format(12345.0)); // produces 12345.00
-        System.out.println(fmt.format(0.0)); // produces .00
-
-        // round to precisely 2 digits, force leading zero
-        fmt = new DecimalFormat("0.00");
-        System.out.println(fmt.format(12345.6789)); // produces 12345.68
-        System.out.println(fmt.format(12345.0)); // produces 12345.00
-        System.out.println(fmt.format(0.0)); // produces 0.00
-
-        // round to precisely 2 digits, force leading zeros
-        fmt = new DecimalFormat("000000000.00");
-        System.out.println(fmt.format(12345.6789)); // produces 000012345.68
-        System.out.println(fmt.format(12345.0)); // produces 000012345.00
-        System.out.println(fmt.format(0.0)); // produces 000000000.00
-
-        // force leading '+'
-        fmt = new DecimalFormat("+0;-0");
-        System.out.println(fmt.format(12345.6789)); // produces +12346
-        System.out.println(fmt.format(-12345.6789)); // produces -12346
-        System.out.println(fmt.format(0)); // produces +0
-
-        // force leading positive/negative, pad to 2
-        fmt = new DecimalFormat("positive 00;negative 0");
-        System.out.println(fmt.format(1)); // produces "positive 01"
-        System.out.println(fmt.format(-1)); // produces "negative 01"
-
-        // qoute special chars (#)
-        fmt = new DecimalFormat("text with '#' followed by #");
-        System.out.println(fmt.format(12.34)); // produces "text with # followed by 12"
-
-        // always show "."
-        fmt = new DecimalFormat("#.#");
-        fmt.setDecimalSeparatorAlwaysShown(true);
-        System.out.println(fmt.format(12.34)); // produces "12.3"
-        System.out.println(fmt.format(12)); // produces "12."
-        System.out.println(fmt.format(0.34)); // produces "0.3"
-
-        // different grouping distances:
-        fmt = new DecimalFormat("#,####.###");
-        System.out.println(fmt.format(123456789.123)); // produces "1,2345,6789.123"
-
-        // scientific:
-        fmt = new DecimalFormat("0.000E00");
-        System.out.println(fmt.format(123456789.123)); // produces "1.235E08"
-        System.out.println(fmt.format(-0.000234)); // produces "-2.34E-04"
-
-        // using variable number of digits:
-        fmt = new DecimalFormat("0");
-        System.out.println(fmt.format(123.123)); // produces "123"
-        fmt.setMinimumFractionDigits(8);
-        System.out.println(fmt.format(123.123)); // produces "123.12300000"
-        fmt.setMaximumFractionDigits(0);
-        System.out.println(fmt.format(123.123)); // produces "123"
-
-        // note: to pad with spaces, you need to do it yourself:
-        // String out = fmt.format(...)
-        // while (out.length() < targlength) out = " "+out;
-    }
-}
-```
-###Delaunay.cc
+### Delaunay.cc
 ```cpp
 // Slow but simple Delaunay triangulation. Does not handle
 // degenerate cases (from O'Rourke, Computational Geometry in C)
@@ -657,85 +793,7 @@ int main()
     return 0;
 }
 ```
-###DijkstraFloyd.cc
-```cpp
-#include <iostream>
-#include <queue>
-#include <cmath>
-#include <vector>
-
-using namespace std;
-
-typedef double T;
-typedef vector<T> VT;
-typedef vector<VT> VVT;
-
-typedef vector<int> VI;
-typedef vector<VI> VVI;
-
-// This function runs Dijkstra's algorithm for single source
-// shortest paths.  No negative cycles allowed!
-//
-// Running time: O(|V|^2)
-//
-//   INPUT:   start, w[i][j] = cost of edge from i to j
-//   OUTPUT:  dist[i] = min weight path from start to i
-//            prev[i] = previous node on the best path from the
-//                      start node   
-
-void Dijkstra (const VVT &w, VT &dist, VI &prev, int start){
-  int n = w.size();
-  VI found (n);
-  prev = VI(n, -1);
-  dist = VT(n, 1000000000);
-  dist[start] = 0;
-  
-  while (start != -1){
-    found[start] = true;
-    int best = -1;
-    for (int k = 0; k < n; k++) if (!found[k]){
-      if (dist[k] > dist[start] + w[start][k]){
-        dist[k] = dist[start] + w[start][k];
-        prev[k] = start;
-      }
-      if (best == -1 || dist[k] < dist[best]) best = k;
-    }
-    start = best;    
-  }
-}
-
-// This function runs the Floyd-Warshall algorithm for all-pairs
-// shortest paths.  Also handles negative edge weights.  Returns true
-// if a negative weight cycle is found.
-//
-// Running time: O(|V|^3)
-//
-//   INPUT:  w[i][j] = weight of edge from i to j
-//   OUTPUT: w[i][j] = shortest path from i to j
-//           prev[i][j] = node before j on the best path starting at i
-
-bool FloydWarshall (VVT &w, VVI &prev){
-  int n = w.size();
-  prev = VVI (n, VI(n, -1));
-  
-  for (int k = 0; k < n; k++){
-    for (int i = 0; i < n; i++){
-      for (int j = 0; j < n; j++){
-        if (w[i][j] > w[i][k] + w[k][j]){
-          w[i][j] = w[i][k] + w[k][j];
-          prev[i][j] = k;
-        }
-      }
-    }
-  }
- 
-  // check for negative weight cycles
-  for(int i=0;i<n;i++)
-    if (w[i][i] < 0) return false;
-  return true;
-}
-```
-###Dinic.cc
+### Dinic.cc
 ```cpp
 // Adjacency list implementation of Dinic's blocking flow algorithm.
 // This is very fast in practice, and only loses to push-relabel flow.
@@ -851,7 +909,7 @@ int main()
 
 // END CUT
 ```
-###EmacsSettings.txt
+### EmacsSettings.txt
 ```
 ;; Jack's .emacs file
 
@@ -876,7 +934,7 @@ int main()
  '(compare-ignore-whitespace t)
 )
 ```
-###Euclid
+### Euclid
 ```cpp
 // This is a collection of useful code for solving problems that
 // involve modular linear equations.  Note that all of the
@@ -1036,7 +1094,7 @@ int main() {
 	return 0;
 }
 ```
-###EulerianPath.cc
+### EulerianPath.cc
 ```cpp
 struct Edge;
 typedef list<Edge>::iterator iter;
@@ -1079,7 +1137,7 @@ void add_edge(int a, int b)
 	itb->reverse_edge = ita;
 }
 ```
-###FFT.cc
+### FFT.cc
 ```cpp
 // Convolution using the fast Fourier transform (FFT).
 //
@@ -1184,7 +1242,7 @@ int main() {
   return 0;
 }
 ```
-###FFT_new.cc
+### FFT_new.cc
 ```cpp
 #include <cassert>
 #include <cstdio>
@@ -1321,77 +1379,7 @@ int main(void)
   return 0;
 }
 ```
-FastDijkstra.cc
-```cpp
-// Implementation of Dijkstra's algorithm using adjacency lists
-// and priority queue for efficiency.
-//
-// Running time: O(|E| log |V|)
-
-#include <queue>
-#include <cstdio>
-
-using namespace std;
-const int INF = 2000000000;
-typedef pair<int, int> PII;
-
-int main() {
-
-	int N, s, t;
-	scanf("%d%d%d", &N, &s, &t);
-	vector<vector<PII> > edges(N);
-	for (int i = 0; i < N; i++) {
-		int M;
-		scanf("%d", &M);
-		for (int j = 0; j < M; j++) {
-			int vertex, dist;
-			scanf("%d%d", &vertex, &dist);
-			edges[i].push_back(make_pair(dist, vertex)); // note order of arguments here
-		}
-	}
-
-	// use priority queue in which top element has the "smallest" priority
-	priority_queue<PII, vector<PII>, greater<PII> > Q;
-	vector<int> dist(N, INF), dad(N, -1);
-	Q.push(make_pair(0, s));
-	dist[s] = 0;
-	while (!Q.empty()) {
-		PII p = Q.top();
-		Q.pop();
-		int here = p.second;
-		if (here == t) break;
-		if (dist[here] != p.first) continue;
-
-		for (vector<PII>::iterator it = edges[here].begin(); it != edges[here].end(); it++) {
-			if (dist[here] + it->first < dist[it->second]) {
-				dist[it->second] = dist[here] + it->first;
-				dad[it->second] = here;
-				Q.push(make_pair(dist[it->second], it->second));
-			}
-		}
-	}
-
-	printf("%d\n", dist[t]);
-	if (dist[t] < INF)
-		for (int i = t; i != -1; i = dad[i])
-			printf("%d%c", i, (i == s ? '\n' : ' '));
-	return 0;
-}
-
-/*
-Sample input:
-5 0 4
-2 1 2 3 1
-2 2 4 4 5
-3 1 4 3 3 4 1
-2 0 1 2 3
-2 1 5 2 1
-Expected:
-5
-4 2 3 0
-*/
-```
-###FastExpo.cc
+### FastExpo.cc
 ```cpp
 /*
 Uses powers of two to exponentiate numbers and matrices. Calculates
@@ -1478,7 +1466,7 @@ int main()
   }
 }
 ```
-###GaussJordan.cc
+### GaussJordan.cc
 ```cpp
 // Gauss-Jordan elimination with full pivoting.
 //
@@ -1587,66 +1575,7 @@ int main() {
   }
 }
 ```
-Geom3D.java
-```java
-public class Geom3D {
-  // distance from point (x, y, z) to plane aX + bY + cZ + d = 0
-  public static double ptPlaneDist(double x, double y, double z,
-      double a, double b, double c, double d) {
-    return Math.abs(a*x + b*y + c*z + d) / Math.sqrt(a*a + b*b + c*c);
-  }
-  
-  // distance between parallel planes aX + bY + cZ + d1 = 0 and
-  // aX + bY + cZ + d2 = 0
-  public static double planePlaneDist(double a, double b, double c,
-      double d1, double d2) {
-    return Math.abs(d1 - d2) / Math.sqrt(a*a + b*b + c*c);
-  }
-  
-  // distance from point (px, py, pz) to line (x1, y1, z1)-(x2, y2, z2)
-  // (or ray, or segment; in the case of the ray, the endpoint is the
-  // first point)
-  public static final int LINE = 0;
-  public static final int SEGMENT = 1;
-  public static final int RAY = 2;
-  public static double ptLineDistSq(double x1, double y1, double z1,
-      double x2, double y2, double z2, double px, double py, double pz,
-      int type) {
-    double pd2 = (x1-x2)*(x1-x2) + (y1-y2)*(y1-y2) + (z1-z2)*(z1-z2);
-    
-    double x, y, z;
-    if (pd2 == 0) {
-      x = x1;
-      y = y1;
-      z = z1;
-    } else {
-      double u = ((px-x1)*(x2-x1) + (py-y1)*(y2-y1) + (pz-z1)*(z2-z1)) / pd2;
-      x = x1 + u * (x2 - x1);
-      y = y1 + u * (y2 - y1);
-      z = z1 + u * (z2 - z1);
-      if (type != LINE && u < 0) {
-        x = x1;
-        y = y1;
-        z = z1;
-      }
-      if (type == SEGMENT && u > 1.0) {
-        x = x2;
-        y = y2;
-        z = z2;
-      }
-    }
-    
-    return (x-px)*(x-px) + (y-py)*(y-py) + (z-pz)*(z-pz);
-  }
-  
-  public static double ptLineDist(double x1, double y1, double z1,
-      double x2, double y2, double z2, double px, double py, double pz,
-      int type) {
-    return Math.sqrt(ptLineDistSq(x1, y1, z1, x2, y2, z2, px, py, pz, type));
-  }
-}
-```
-###Geometry.cc
+### Geometry.cc
 ```cpp
 // C++ routines for computational geometry.
 
@@ -1950,7 +1879,7 @@ int main() {
   return 0;
 }
 ```
-###GraphCutInference.cc
+### GraphCutInference.cc
 ```cpp
 // Special-purpose {0,1} combinatorial optimization solver for
 // problems of the following by a reduction to graph cuts:
@@ -2112,7 +2041,7 @@ int main() {
   return 0;
 }
 ```
-###IO.cc
+### IO.cc
 ```cpp
 #include <iostream>
 #include <iomanip>
@@ -2141,154 +2070,7 @@ int main()
     cout << hex << 100 << " " << 1000 << " " << 10000 << dec << endl;
 }
 ```
-###JavaGeometry.java
-```java
-// In this example, we read an input file containing three lines, each
-// containing an even number of doubles, separated by commas.  The first two
-// lines represent the coordinates of two polygons, given in counterclockwise 
-// (or clockwise) order, which we will call "A" and "B".  The last line 
-// contains a list of points, p[1], p[2], ...
-//
-// Our goal is to determine:
-//   (1) whether B - A is a single closed shape (as opposed to multiple shapes)
-//   (2) the area of B - A
-//   (3) whether each p[i] is in the interior of B - A
-//
-// INPUT:
-//   0 0 10 0 0 10
-//   0 0 10 10 10 0
-//   8 6
-//   5 1
-//
-// OUTPUT:
-//   The area is singular.
-//   The area is 25.0
-//   Point belongs to the area.
-//   Point does not belong to the area.
-
-import java.util.*;
-import java.awt.geom.*;
-import java.io.*;
-
-public class JavaGeometry {
-
-    // make an array of doubles from a string
-    static double[] readPoints(String s) {
-        String[] arr = s.trim().split("\\s++");
-        double[] ret = new double[arr.length];
-        for (int i = 0; i < arr.length; i++) ret[i] = Double.parseDouble(arr[i]);
-        return ret;
-    }
-
-    // make an Area object from the coordinates of a polygon
-    static Area makeArea(double[] pts) {
-        Path2D.Double p = new Path2D.Double();
-        p.moveTo(pts[0], pts[1]);
-        for (int i = 2; i < pts.length; i += 2) p.lineTo(pts[i], pts[i+1]);
-        p.closePath();
-        return new Area(p);        
-    }
-
-    // compute area of polygon
-    static double computePolygonArea(ArrayList<Point2D.Double> points) {
-        Point2D.Double[] pts = points.toArray(new Point2D.Double[points.size()]);  
-        double area = 0;
-        for (int i = 0; i < pts.length; i++){
-            int j = (i+1) % pts.length;
-            area += pts[i].x * pts[j].y - pts[j].x * pts[i].y;
-        }        
-        return Math.abs(area)/2;
-    }
-
-    // compute the area of an Area object containing several disjoint polygons
-    static double computeArea(Area area) {
-        double totArea = 0;
-        PathIterator iter = area.getPathIterator(null);
-        ArrayList<Point2D.Double> points = new ArrayList<Point2D.Double>();
-
-        while (!iter.isDone()) {
-            double[] buffer = new double[6];
-            switch (iter.currentSegment(buffer)) {
-            case PathIterator.SEG_MOVETO:
-            case PathIterator.SEG_LINETO:
-                points.add(new Point2D.Double(buffer[0], buffer[1]));
-                break;
-            case PathIterator.SEG_CLOSE:
-                totArea += computePolygonArea(points);
-                points.clear();
-                break;
-            }
-            iter.next();
-        }
-        return totArea;
-    }
-
-    // notice that the main() throws an Exception -- necessary to
-    // avoid wrapping the Scanner object for file reading in a 
-    // try { ... } catch block.
-    public static void main(String args[]) throws Exception {
-
-        Scanner scanner = new Scanner(new File("input.txt"));
-        // also,
-        //   Scanner scanner = new Scanner (System.in);
-
-        double[] pointsA = readPoints(scanner.nextLine());
-        double[] pointsB = readPoints(scanner.nextLine());
-        Area areaA = makeArea(pointsA);
-        Area areaB = makeArea(pointsB);
-        areaB.subtract(areaA);
-        // also,
-        //   areaB.exclusiveOr (areaA);
-        //   areaB.add (areaA);
-        //   areaB.intersect (areaA);
-        
-        // (1) determine whether B - A is a single closed shape (as 
-        //     opposed to multiple shapes)
-        boolean isSingle = areaB.isSingular();
-        // also,
-        //   areaB.isEmpty();
-
-        if (isSingle)
-            System.out.println("The area is singular.");
-        else
-            System.out.println("The area is not singular.");
-        
-        // (2) compute the area of B - A
-        System.out.println("The area is " + computeArea(areaB) + ".");
-        
-        // (3) determine whether each p[i] is in the interior of B - A
-        while (scanner.hasNextDouble()) {
-            double x = scanner.nextDouble();
-            assert(scanner.hasNextDouble());
-            double y = scanner.nextDouble();
-
-            if (areaB.contains(x,y)) {
-                System.out.println ("Point belongs to the area.");
-            } else {
-                System.out.println ("Point does not belong to the area.");
-            }
-        }
-
-        // Finally, some useful things we didn't use in this example:
-        //
-        //   Ellipse2D.Double ellipse = new Ellipse2D.Double (double x, double y, 
-        //                                                    double w, double h);
-        //
-        //     creates an ellipse inscribed in box with bottom-left corner (x,y)
-        //     and upper-right corner (x+y,w+h)
-        // 
-        //   Rectangle2D.Double rect = new Rectangle2D.Double (double x, double y, 
-        //                                                     double w, double h);
-        //
-        //     creates a box with bottom-left corner (x,y) and upper-right 
-        //     corner (x+y,w+h)
-        //
-        // Each of these can be embedded in an Area object (e.g., new Area (rect)).
-
-    }
-}
-```
-###KDTree.cc
+### KDTree.cc
 ```cpp
 // -----------------------------------------------------------------
 // A straightforward, but probably sub-optimal KD-tree implmentation
@@ -2499,7 +2281,7 @@ int main()
 
 // --------------------------------------------------------------------------
 ```
-###KMP.cc
+### KMP.cc
 ```cpp
 /*
 Searches for the string w in the string s (of length k). Returns the
@@ -2566,7 +2348,7 @@ int main()
   cout << p << ": " << a.substr(p, b.length()) << " " << b << endl;
 }
 ```
-###Kruskal.cc
+### Kruskal.cc
 ```cpp
 /*
 Uses Kruskal's Algorithm to calculate the weight of the minimum spanning
@@ -2658,7 +2440,7 @@ int main()
   cin >> wa[0][0];
 }
 ```
-###LCA.cc
+### LCA.cc
 ```cpp
 const int max_nodes, log_max_nodes;
 int num_nodes, log_num_nodes, root;
@@ -2745,7 +2527,7 @@ int main(int argc,char* argv[])
     return 0;
 }
 ```
-LCS.cc
+### LCS.cc
 ```cpp
 /*
 Calculates the length of the longest common subsequence of two vectors.
@@ -2854,7 +2636,7 @@ int main()
   }
 }
 ```
-###LatLong.cc
+### LatLong.cc
 ```cpp
 /*
 Converts from rectangular coordinates to latitude/longitude and vice
@@ -2910,99 +2692,7 @@ int main()
   cout << A.x << " " << A.y << " " << A.z << endl;
 }
 ```
-###LogLan.java
-```java
-// Code which demonstrates the use of Java's regular expression libraries.
-// This is a solution for 
-//
-//   Loglan: a logical language
-//   http://acm.uva.es/p/v1/134.html
-//
-// In this problem, we are given a regular language, whose rules can be
-// inferred directly from the code.  For each sentence in the input, we must
-// determine whether the sentence matches the regular expression or not.  The
-// code consists of (1) building the regular expression (which is fairly
-// complex) and (2) using the regex to match sentences.
-
-import java.util.*;
-import java.util.regex.*;
-
-public class LogLan {
-
-    public static String BuildRegex (){
-	String space = " +";
-
-	String A = "([aeiou])";
-	String C = "([a-z&&[^aeiou]])";
-	String MOD = "(g" + A + ")";
-	String BA = "(b" + A + ")";
-	String DA = "(d" + A + ")";
-	String LA = "(l" + A + ")";
-	String NAM = "([a-z]*" + C + ")";
-	String PREDA = "(" + C + C + A + C + A + "|" + C + A + C + C + A + ")";
-
-	String predstring = "(" + PREDA + "(" + space + PREDA + ")*)";
-	String predname = "(" + LA + space + predstring + "|" + NAM + ")";
-	String preds = "(" + predstring + "(" + space + A + space + predstring + ")*)";
-	String predclaim = "(" + predname + space + BA + space + preds + "|" + DA + space +
-            preds + ")";
-	String verbpred = "(" + MOD + space + predstring + ")";
-	String statement = "(" + predname + space + verbpred + space + predname + "|" + 
-            predname + space + verbpred + ")";
-	String sentence = "(" + statement + "|" + predclaim + ")";
-
-	return "^" + sentence + "$";
-    }
-
-    public static void main (String args[]){
-
-	String regex = BuildRegex();
-	Pattern pattern = Pattern.compile (regex);
-	
-	Scanner s = new Scanner(System.in);
-	while (true) {
-
-            // In this problem, each sentence consists of multiple lines, where the last 
-	    // line is terminated by a period.  The code below reads lines until
-	    // encountering a line whose final character is a '.'.  Note the use of
-            //
-            //    s.length() to get length of string
-            //    s.charAt() to extract characters from a Java string
-            //    s.trim() to remove whitespace from the beginning and end of Java string
-            //
-            // Other useful String manipulation methods include
-            //
-            //    s.compareTo(t) < 0 if s < t, lexicographically
-            //    s.indexOf("apple") returns index of first occurrence of "apple" in s
-            //    s.lastIndexOf("apple") returns index of last occurrence of "apple" in s
-            //    s.replace(c,d) replaces occurrences of character c with d
-            //    s.startsWith("apple) returns (s.indexOf("apple") == 0)
-            //    s.toLowerCase() / s.toUpperCase() returns a new lower/uppercased string
-            //
-            //    Integer.parseInt(s) converts s to an integer (32-bit)
-            //    Long.parseLong(s) converts s to a long (64-bit)
-            //    Double.parseDouble(s) converts s to a double
-            
-	    String sentence = "";
-	    while (true){
-		sentence = (sentence + " " + s.nextLine()).trim();
-		if (sentence.equals("#")) return;
-		if (sentence.charAt(sentence.length()-1) == '.') break;		
-	    }
-
-            // now, we remove the period, and match the regular expression
-
-            String removed_period = sentence.substring(0, sentence.length()-1).trim();
-	    if (pattern.matcher (removed_period).find()){
-		System.out.println ("Good");
-	    } else {
-		System.out.println ("Bad!");
-	    }
-	}
-    }
-}
-```
-###LongestIncreasingSubstring
+### LongestIncreasingSubstring
 ```cpp
 // Given a list of numbers of length n, this routine extracts a 
 // longest increasing subsequence.
@@ -3053,7 +2743,7 @@ VI LongestIncreasingSubsequence(VI v) {
   return ret;
 }
 ```
-###MaxBipartiteMatching
+### MaxBipartiteMatching
 ```cpp
 // This code performs maximum bipartite matching.
 //
@@ -3097,7 +2787,7 @@ int BipartiteMatching(const VVI &w, VI &mr, VI &mc) {
   return ct;
 }
 ```
-###MaxFlow.cc
+### MaxFlow.cc
 ```cpp
 // Adjacency matrix implementation of Dinic's blocking flow algorithm.
 //
@@ -3228,127 +2918,7 @@ int main() {
 
 // END CUT
 ```
-###MaxFlow.java
-```java
-// Fattest path network flow algorithm using an adjacency matrix.
-//
-// Running time: O(|E|^2 log (|V| * U), where U is the largest
-//               capacity of any edge.  If you replace the 'fattest
-//               path' search with a minimum number of edges search,
-//               the running time becomes O(|E|^2 |V|).
-//
-// INPUT: cap -- a matrix such that cap[i][j] is the capacity of
-//               a directed edge from node i to node j
-//
-//               * Note that it is legitimate to create an i->j
-//                 edge without a corresponding j->i edge.
-//
-//               * Note that for an undirected edge, set
-//                 both cap[i][j] and cap[j][i] to the capacity of
-//                 the undirected edge.
-//
-//        source -- starting node
-//        sink -- ending node
-//
-// OUTPUT: value of maximum flow; also, the flow[][] matrix will
-//         contain both positive and negative integers -- if you
-//         want the actual flow assignments, look at the
-//         *positive* flow values only.
-//
-// To use this, create a MaxFlow object, and call it like this:
-//
-//   MaxFlow nf;
-//   int maxflow = nf.getMaxFlow(cap,source,sink);
-
-import java.util.*;
-
-public class MaxFlow {
-    boolean found[];
-    int N, cap[][], flow[][], dad[], dist[];
-
-    boolean searchFattest(int source, int sink) {
-	Arrays.fill(found, false);
-	Arrays.fill(dist, 0);
-	dist[source] = Integer.MAX_VALUE / 2;
-        while (source != N) {
-            int best = N;
-            found[source] = true;
-            if (source == sink) break;
-            for (int k = 0; k < N; k++) {
-		if (found[k]) continue;
-		int possible = Math.min(cap[source][k] - flow[source][k], dist[source]);
-		if (dist[k] < possible) {
-		    dist[k] = possible;
-		    dad[k] = source; 
-		}
-                if (dist[k] > dist[best]) best = k;
-	    }
-            source = best;
-        }
-        return found[sink];
-    }
-
-    boolean searchShortest(int source, int sink) {
-	Arrays.fill(found, false);
-	Arrays.fill(dist, Integer.MAX_VALUE/2);
-	dist[source] = 0;
-        while (source != N) {
-            int best = N;
-            found[source] = true;
-            if (source == sink) break;
-            for (int k = 0; k < N; k++) {
-		if (found[k]) continue;
-                if (cap[source][k] - flow[source][k] > 0) {
-                    if (dist[k] > dist[source] + 1){
-                        dist[k] = dist[source] + 1;
-                        dad[k] = source;
-                    }
-                }
-                if (dist[k] < dist[best]) best = k;
-	    }
-            source = best;
-        }
-        return found[sink];
-    }
-
-    public int getMaxFlow(int cap[][], int source, int sink) {
-        this.cap = cap;
-        N = cap.length;
-        found = new boolean[N];
-        flow = new int[N][N];
-        dist = new int[N+1];
-        dad = new int[N];
-    
-        int totflow = 0;
-        while (searchFattest(source, sink)) {
-            int amt = Integer.MAX_VALUE;
-            for (int x = sink; x != source; x = dad[x])
-                amt = Math.min(amt, cap[dad[x]][x] - flow[dad[x]][x]);
-            for (int x = sink; x != source; x = dad[x]) {
-                flow[dad[x]][x] += amt;
-                flow[x][dad[x]] -= amt;
-            }
-            totflow += amt;
-        }
-
-        return totflow;
-    }
-  
-    public static void main(String args[]) {
-	MaxFlow flow = new MaxFlow();
-	int cap[][] = {{0, 3, 4, 5, 0},
-		       {0, 0, 2, 0, 0},
-		       {0, 0, 0, 4, 1},
-		       {0, 0, 0, 0, 10},
-		       {0 ,0, 0, 0, 0}};
-
-	// should print out "10"
-
-	System.out.println(flow.getMaxFlow(cap, 0, 4));
-    }
-}
-```
-###MillerRabin.cc
+### MillerRabin.cc
 ```cpp
 // Randomized Primality Test (Miller-Rabin):
 //   Error rate: 2^(-TRIAL)
@@ -3412,7 +2982,7 @@ bool IsPrimeFast(LL n, int TRIAL)
   return true;
 }
 ```
-###MinCostMatching.cc
+### MinCostMatching.cc
 ```cpp
 //////////////////////////////////////////////////////////////////////
 // Min cost bipartite matching via shortest augmenting paths
@@ -3544,7 +3114,7 @@ double MinCostMatching(const VVD &cost, VI &Lmate, VI &Rmate) {
   return value;
 }
 ```
-###MinCostMaxFlow.cc
+### MinCostMaxFlow.cc
 ```cpp
 // Implementation of min cost max flow algorithm using adjacency
 // matrix (Edmonds and Karp 1972).  This implementation keeps track of
@@ -3681,142 +3251,7 @@ int main() {
 
 // END CUT
 ```
-###MinCostMaxFlow.java
-```java
-// Min cost max flow algorithm using an adjacency matrix.  If you
-// want just regular max flow, setting all edge costs to 1 gives
-// running time O(|E|^2 |V|).
-//
-// Running time: O(min(|V|^2 * totflow, |V|^3 * totcost))
-//
-// INPUT: cap -- a matrix such that cap[i][j] is the capacity of
-//               a directed edge from node i to node j
-//
-//        cost -- a matrix such that cost[i][j] is the (positive)
-//                cost of sending one unit of flow along a 
-//                directed edge from node i to node j
-//
-//        source -- starting node
-//        sink -- ending node
-//
-// OUTPUT: max flow and min cost; the matrix flow will contain
-//         the actual flow values (note that unlike in the MaxFlow
-//         code, you don't need to ignore negative flow values -- there
-//         shouldn't be any)
-//
-// To use this, create a MinCostMaxFlow object, and call it like this:
-//
-//   MinCostMaxFlow nf;
-//   int maxflow = nf.getMaxFlow(cap,cost,source,sink);
-
-import java.util.*;
-
-public class MinCostMaxFlow {
-    boolean found[];
-    int N, cap[][], flow[][], cost[][], dad[], dist[], pi[];
-    
-    static final int INF = Integer.MAX_VALUE / 2 - 1;
-    
-    boolean search(int source, int sink) {
-	Arrays.fill(found, false);
-	Arrays.fill(dist, INF);
-	dist[source] = 0;
-
-	while (source != N) {
-	    int best = N;
-	    found[source] = true;
-	    for (int k = 0; k < N; k++) {
-		if (found[k]) continue;
-		if (flow[k][source] != 0) {
-		    int val = dist[source] + pi[source] - pi[k] - cost[k][source];
-		    if (dist[k] > val) {
-			dist[k] = val;
-			dad[k] = source;
-		    }
-		}
-		if (flow[source][k] < cap[source][k]) {
-		    int val = dist[source] + pi[source] - pi[k] + cost[source][k];
-		    if (dist[k] > val) {
-			dist[k] = val;
-			dad[k] = source;
-		    }
-		}
-		
-		if (dist[k] < dist[best]) best = k;
-	    }
-	    source = best;
-	}
-	for (int k = 0; k < N; k++)
-	    pi[k] = Math.min(pi[k] + dist[k], INF);
-	return found[sink];
-    }
-    
-    
-    int[] getMaxFlow(int cap[][], int cost[][], int source, int sink) {
-	this.cap = cap;
-	this.cost = cost;
-	
-	N = cap.length;
-        found = new boolean[N];
-        flow = new int[N][N];
-        dist = new int[N+1];
-        dad = new int[N];
-        pi = new int[N];
-	
-	int totflow = 0, totcost = 0;
-	while (search(source, sink)) {
-	    int amt = INF;
-	    for (int x = sink; x != source; x = dad[x])
-		amt = Math.min(amt, flow[x][dad[x]] != 0 ? flow[x][dad[x]] :
-                       cap[dad[x]][x] - flow[dad[x]][x]);
-	    for (int x = sink; x != source; x = dad[x]) {
-		if (flow[x][dad[x]] != 0) {
-		    flow[x][dad[x]] -= amt;
-		    totcost -= amt * cost[x][dad[x]];
-		} else {
-		    flow[dad[x]][x] += amt;
-		    totcost += amt * cost[dad[x]][x];
-		}
-	    }
-	    totflow += amt;
-	}
-	
-	return new int[]{ totflow, totcost };
-    }
-  
-    public static void main (String args[]){
-        MinCostMaxFlow flow = new MinCostMaxFlow();
-        int cap[][] = {{0, 3, 4, 5, 0},
-                       {0, 0, 2, 0, 0},
-                       {0, 0, 0, 4, 1},
-                       {0, 0, 0, 0, 10},
-                       {0, 0, 0, 0, 0}};
-
-        int cost1[][] = {{0, 1, 0, 0, 0},
-                         {0, 0, 0, 0, 0},
-                         {0, 0, 0, 0, 0},
-                         {0, 0, 0, 0, 0},
-                         {0, 0, 0, 0, 0}};
-
-        int cost2[][] = {{0, 0, 1, 0, 0},
-                         {0, 0, 0, 0, 0},
-                         {0, 0, 0, 0, 0},
-                         {0, 0, 0, 0, 0},
-                         {0, 0, 0, 0, 0}};
-        
-        // should print out:
-        //   10 1
-        //   10 3
-
-        int ret1[] = flow.getMaxFlow(cap, cost1, 0, 4);
-        int ret2[] = flow.getMaxFlow(cap, cost2, 0, 4);
-        
-        System.out.println (ret1[0] + " " + ret1[1]);
-        System.out.println (ret2[0] + " " + ret2[1]);
-    }
-}
-```
-###MinCut.cc
+### MinCut.cc
 ```cpp
 // Adjacency matrix implementation of Stoer-Wagner min cut algorithm.
 //
@@ -3893,7 +3328,7 @@ int main() {
 }
 // END CUT
 ```
-###Prim.cc
+### Prim.cc
 ```cpp
 // This function runs Prim's algorithm for constructing minimum
 // weight spanning trees.
@@ -3979,7 +3414,7 @@ int main(){
     cout << edges[i].first << " " << edges[i].second << endl;
 }
 ```
-###Primes.cc
+### Primes.cc
 ```cpp
 // O(sqrt(x)) Exhaustive Primality Test
 #include <cmath>
@@ -4033,7 +3468,7 @@ bool IsPrimeSlow (LL x)
 //    The largest prime smaller than 100000000000000000 is 99999999999999997.
 //    The largest prime smaller than 1000000000000000000 is 999999999999999989.
 ```
-###PushRelabel.cc
+### PushRelabel.cc
 ```cpp
 // Adjacency list implementation of FIFO push relabel maximum flow
 // with the gap relabeling heuristic.  This implementation is
@@ -4173,7 +3608,7 @@ int main() {
 
 // END CUT
 ```
-###RandomSTL.cc
+### RandomSTL.cc
 ```cpp
 // Example for using stringstreams and next_permutation
 
@@ -4228,7 +3663,7 @@ int main(void){
   cout << endl; 
 }
 ```
-###ReducedRowEchelonForm.cc
+### ReducedRowEchelonForm.cc
 ```cpp
 // Reduced row echelon form via Gauss-Jordan elimination 
 // with partial pivoting.  This can be used for computing
@@ -4305,7 +3740,7 @@ int main() {
   }
 }
 ```
-###SCC.cc
+### SCC.cc
 ```cpp
 #include<memory.h>
 struct edge{int e, nxt;};
@@ -4344,77 +3779,7 @@ void SCC()
   for(i=stk[0];i>=1;i--) if(v[stk[i]]){group_cnt++; fill_backward(stk[i]);}
 }
 ```
-###SegmentTreeLazy.java
-```java
-public class SegmentTreeRangeUpdate {
-	public long[] leaf;
-	public long[] update;
-	public int origSize;
-	public SegmentTreeRangeUpdate(int[] list)	{
-		origSize = list.length;
-		leaf = new long[4*list.length];
-		update = new long[4*list.length];
-		build(1,0,list.length-1,list);
-	}
-	public void build(int curr, int begin, int end, int[] list)	{
-		if(begin == end)
-			leaf[curr] = list[begin];
-		else	{
-			int mid = (begin+end)/2;
-			build(2 * curr, begin, mid, list);
-			build(2 * curr + 1, mid+1, end, list);
-			leaf[curr] = leaf[2*curr] + leaf[2*curr+1];
-		}
-	}
-	public void update(int begin, int end, int val)	{
-		update(1,0,origSize-1,begin,end,val);
-	}
-	public void update(int curr,  int tBegin, int tEnd, int begin, int end, int val)	{
-		if(tBegin >= begin && tEnd <= end)
-			update[curr] += val;
-		else	{
-			leaf[curr] += (Math.min(end,tEnd)-Math.max(begin,tBegin)+1) * val;
-			int mid = (tBegin+tEnd)/2;
-			if(mid >= begin && tBegin <= end)
-				update(2*curr, tBegin, mid, begin, end, val);
-			if(tEnd >= begin && mid+1 <= end)
-				update(2*curr+1, mid+1, tEnd, begin, end, val);
-		}
-	}
-	public long query(int begin, int end)	{
-		return query(1,0,origSize-1,begin,end);
-	}
-	public long query(int curr, int tBegin, int tEnd, int begin, int end)	{
-		if(tBegin >= begin && tEnd <= end)	{
-			if(update[curr] != 0)	{
-				leaf[curr] += (tEnd-tBegin+1) * update[curr];
-				if(2*curr < update.length){
-					update[2*curr] += update[curr];
-					update[2*curr+1] += update[curr];
-				}
-				update[curr] = 0;
-			}
-			return leaf[curr];
-		}
-		else	{
-			leaf[curr] += (tEnd-tBegin+1) * update[curr];
-			if(2*curr < update.length){
-				update[2*curr] += update[curr];
-				update[2*curr+1] += update[curr];
-			}
-			update[curr] = 0;
-			int mid = (tBegin+tEnd)/2;
-			long ret = 0;
-			if(mid >= begin && tBegin <= end)
-				ret += query(2*curr, tBegin, mid, begin, end);
-			if(tEnd >= begin && mid+1 <= end)
-				ret += query(2*curr+1, mid+1, tEnd, begin, end);
-			return ret;
-		}
-	}
-}
-```
-###Simplex.cc
+### Simplex.cc
 ```cpp
 // Two-phase simplex algorithm for solving linear programs of the form
 //
@@ -4541,7 +3906,7 @@ int main() {
   return 0;
 }
 ```
-###SuffixArray.cc
+### SuffixArray.cc
 ```cpp
 // Suffix array construction in O(L log^2 L) time.  Routine for
 // computing the length of the longest common prefix of any two
@@ -4655,7 +4020,7 @@ int main() {
 #endif
 // END CUT
 ```
-###TopologicalSort.cc
+### TopologicalSort.cc
 ```cpp
 // This function uses performs a non-recursive topological sort.
 //
@@ -4708,7 +4073,7 @@ bool TopologicalSort (const VVI &w, VI &order){
   return (order.size() == n);
 }
 ```
-###UnionFind.cc
+### UnionFind.cc
 ```cpp
 #include <iostream>
 #include <vector>
@@ -4727,7 +4092,7 @@ int main()
 	return 0;
 }
 ```
-###Splay
+### Splay
 ```cpp
 #include <cstdio>
 #include <algorithm>
@@ -4877,6 +4242,738 @@ int main()
     select(i + 1, null);
     printf("%d ", root->val);
   }
+}
+```
+
+## Java
+### Dates.java
+```java
+// Example of using Java's built-in date calculation routines
+
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+public class Dates {
+    public static void main(String[] args) {
+        Scanner s = new Scanner(System.in);
+        SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy");
+        while (true) {
+            int n = s.nextInt();
+            if (n == 0) break;
+            GregorianCalendar c = new GregorianCalendar(n, Calendar.JANUARY, 1);
+            while (c.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY) 
+		c.add(Calendar.DAY_OF_YEAR, 1);
+            for (int i = 0; i < 12; i++) {
+                System.out.println(sdf.format(c.getTime()));
+                while (c.get(Calendar.MONTH) == i) c.add(Calendar.DAY_OF_YEAR, 7);
+            }
+        }
+    }
+}
+```
+### DecFormat.java
+```java
+// examples for printing floating point numbers
+
+import java.util.*;
+import java.io.*;
+import java.text.DecimalFormat;
+
+public class DecFormat {
+    public static void main(String[] args) {
+        DecimalFormat fmt;
+
+        // round to at most 2 digits, leave of digits if not needed
+        fmt = new DecimalFormat("#.##");
+        System.out.println(fmt.format(12345.6789)); // produces 12345.68
+        System.out.println(fmt.format(12345.0)); // produces 12345
+        System.out.println(fmt.format(0.0)); // produces 0
+        System.out.println(fmt.format(0.01)); // produces .1
+
+        // round to precisely 2 digits
+        fmt = new DecimalFormat("#.00");
+        System.out.println(fmt.format(12345.6789)); // produces 12345.68
+        System.out.println(fmt.format(12345.0)); // produces 12345.00
+        System.out.println(fmt.format(0.0)); // produces .00
+
+        // round to precisely 2 digits, force leading zero
+        fmt = new DecimalFormat("0.00");
+        System.out.println(fmt.format(12345.6789)); // produces 12345.68
+        System.out.println(fmt.format(12345.0)); // produces 12345.00
+        System.out.println(fmt.format(0.0)); // produces 0.00
+
+        // round to precisely 2 digits, force leading zeros
+        fmt = new DecimalFormat("000000000.00");
+        System.out.println(fmt.format(12345.6789)); // produces 000012345.68
+        System.out.println(fmt.format(12345.0)); // produces 000012345.00
+        System.out.println(fmt.format(0.0)); // produces 000000000.00
+
+        // force leading '+'
+        fmt = new DecimalFormat("+0;-0");
+        System.out.println(fmt.format(12345.6789)); // produces +12346
+        System.out.println(fmt.format(-12345.6789)); // produces -12346
+        System.out.println(fmt.format(0)); // produces +0
+
+        // force leading positive/negative, pad to 2
+        fmt = new DecimalFormat("positive 00;negative 0");
+        System.out.println(fmt.format(1)); // produces "positive 01"
+        System.out.println(fmt.format(-1)); // produces "negative 01"
+
+        // qoute special chars (#)
+        fmt = new DecimalFormat("text with '#' followed by #");
+        System.out.println(fmt.format(12.34)); // produces "text with # followed by 12"
+
+        // always show "."
+        fmt = new DecimalFormat("#.#");
+        fmt.setDecimalSeparatorAlwaysShown(true);
+        System.out.println(fmt.format(12.34)); // produces "12.3"
+        System.out.println(fmt.format(12)); // produces "12."
+        System.out.println(fmt.format(0.34)); // produces "0.3"
+
+        // different grouping distances:
+        fmt = new DecimalFormat("#,####.###");
+        System.out.println(fmt.format(123456789.123)); // produces "1,2345,6789.123"
+
+        // scientific:
+        fmt = new DecimalFormat("0.000E00");
+        System.out.println(fmt.format(123456789.123)); // produces "1.235E08"
+        System.out.println(fmt.format(-0.000234)); // produces "-2.34E-04"
+
+        // using variable number of digits:
+        fmt = new DecimalFormat("0");
+        System.out.println(fmt.format(123.123)); // produces "123"
+        fmt.setMinimumFractionDigits(8);
+        System.out.println(fmt.format(123.123)); // produces "123.12300000"
+        fmt.setMaximumFractionDigits(0);
+        System.out.println(fmt.format(123.123)); // produces "123"
+
+        // note: to pad with spaces, you need to do it yourself:
+        // String out = fmt.format(...)
+        // while (out.length() < targlength) out = " "+out;
+    }
+}
+```
+### Geom3D.java
+```java
+public class Geom3D {
+  // distance from point (x, y, z) to plane aX + bY + cZ + d = 0
+  public static double ptPlaneDist(double x, double y, double z,
+      double a, double b, double c, double d) {
+    return Math.abs(a*x + b*y + c*z + d) / Math.sqrt(a*a + b*b + c*c);
+  }
+  
+  // distance between parallel planes aX + bY + cZ + d1 = 0 and
+  // aX + bY + cZ + d2 = 0
+  public static double planePlaneDist(double a, double b, double c,
+      double d1, double d2) {
+    return Math.abs(d1 - d2) / Math.sqrt(a*a + b*b + c*c);
+  }
+  
+  // distance from point (px, py, pz) to line (x1, y1, z1)-(x2, y2, z2)
+  // (or ray, or segment; in the case of the ray, the endpoint is the
+  // first point)
+  public static final int LINE = 0;
+  public static final int SEGMENT = 1;
+  public static final int RAY = 2;
+  public static double ptLineDistSq(double x1, double y1, double z1,
+      double x2, double y2, double z2, double px, double py, double pz,
+      int type) {
+    double pd2 = (x1-x2)*(x1-x2) + (y1-y2)*(y1-y2) + (z1-z2)*(z1-z2);
+    
+    double x, y, z;
+    if (pd2 == 0) {
+      x = x1;
+      y = y1;
+      z = z1;
+    } else {
+      double u = ((px-x1)*(x2-x1) + (py-y1)*(y2-y1) + (pz-z1)*(z2-z1)) / pd2;
+      x = x1 + u * (x2 - x1);
+      y = y1 + u * (y2 - y1);
+      z = z1 + u * (z2 - z1);
+      if (type != LINE && u < 0) {
+        x = x1;
+        y = y1;
+        z = z1;
+      }
+      if (type == SEGMENT && u > 1.0) {
+        x = x2;
+        y = y2;
+        z = z2;
+      }
+    }
+    
+    return (x-px)*(x-px) + (y-py)*(y-py) + (z-pz)*(z-pz);
+  }
+  
+  public static double ptLineDist(double x1, double y1, double z1,
+      double x2, double y2, double z2, double px, double py, double pz,
+      int type) {
+    return Math.sqrt(ptLineDistSq(x1, y1, z1, x2, y2, z2, px, py, pz, type));
+  }
+}
+```
+### JavaGeometry.java
+```java
+// In this example, we read an input file containing three lines, each
+// containing an even number of doubles, separated by commas.  The first two
+// lines represent the coordinates of two polygons, given in counterclockwise 
+// (or clockwise) order, which we will call "A" and "B".  The last line 
+// contains a list of points, p[1], p[2], ...
+//
+// Our goal is to determine:
+//   (1) whether B - A is a single closed shape (as opposed to multiple shapes)
+//   (2) the area of B - A
+//   (3) whether each p[i] is in the interior of B - A
+//
+// INPUT:
+//   0 0 10 0 0 10
+//   0 0 10 10 10 0
+//   8 6
+//   5 1
+//
+// OUTPUT:
+//   The area is singular.
+//   The area is 25.0
+//   Point belongs to the area.
+//   Point does not belong to the area.
+
+import java.util.*;
+import java.awt.geom.*;
+import java.io.*;
+
+public class JavaGeometry {
+
+    // make an array of doubles from a string
+    static double[] readPoints(String s) {
+        String[] arr = s.trim().split("\\s++");
+        double[] ret = new double[arr.length];
+        for (int i = 0; i < arr.length; i++) ret[i] = Double.parseDouble(arr[i]);
+        return ret;
+    }
+
+    // make an Area object from the coordinates of a polygon
+    static Area makeArea(double[] pts) {
+        Path2D.Double p = new Path2D.Double();
+        p.moveTo(pts[0], pts[1]);
+        for (int i = 2; i < pts.length; i += 2) p.lineTo(pts[i], pts[i+1]);
+        p.closePath();
+        return new Area(p);        
+    }
+
+    // compute area of polygon
+    static double computePolygonArea(ArrayList<Point2D.Double> points) {
+        Point2D.Double[] pts = points.toArray(new Point2D.Double[points.size()]);  
+        double area = 0;
+        for (int i = 0; i < pts.length; i++){
+            int j = (i+1) % pts.length;
+            area += pts[i].x * pts[j].y - pts[j].x * pts[i].y;
+        }        
+        return Math.abs(area)/2;
+    }
+
+    // compute the area of an Area object containing several disjoint polygons
+    static double computeArea(Area area) {
+        double totArea = 0;
+        PathIterator iter = area.getPathIterator(null);
+        ArrayList<Point2D.Double> points = new ArrayList<Point2D.Double>();
+
+        while (!iter.isDone()) {
+            double[] buffer = new double[6];
+            switch (iter.currentSegment(buffer)) {
+            case PathIterator.SEG_MOVETO:
+            case PathIterator.SEG_LINETO:
+                points.add(new Point2D.Double(buffer[0], buffer[1]));
+                break;
+            case PathIterator.SEG_CLOSE:
+                totArea += computePolygonArea(points);
+                points.clear();
+                break;
+            }
+            iter.next();
+        }
+        return totArea;
+    }
+
+    // notice that the main() throws an Exception -- necessary to
+    // avoid wrapping the Scanner object for file reading in a 
+    // try { ... } catch block.
+    public static void main(String args[]) throws Exception {
+
+        Scanner scanner = new Scanner(new File("input.txt"));
+        // also,
+        //   Scanner scanner = new Scanner (System.in);
+
+        double[] pointsA = readPoints(scanner.nextLine());
+        double[] pointsB = readPoints(scanner.nextLine());
+        Area areaA = makeArea(pointsA);
+        Area areaB = makeArea(pointsB);
+        areaB.subtract(areaA);
+        // also,
+        //   areaB.exclusiveOr (areaA);
+        //   areaB.add (areaA);
+        //   areaB.intersect (areaA);
+        
+        // (1) determine whether B - A is a single closed shape (as 
+        //     opposed to multiple shapes)
+        boolean isSingle = areaB.isSingular();
+        // also,
+        //   areaB.isEmpty();
+
+        if (isSingle)
+            System.out.println("The area is singular.");
+        else
+            System.out.println("The area is not singular.");
+        
+        // (2) compute the area of B - A
+        System.out.println("The area is " + computeArea(areaB) + ".");
+        
+        // (3) determine whether each p[i] is in the interior of B - A
+        while (scanner.hasNextDouble()) {
+            double x = scanner.nextDouble();
+            assert(scanner.hasNextDouble());
+            double y = scanner.nextDouble();
+
+            if (areaB.contains(x,y)) {
+                System.out.println ("Point belongs to the area.");
+            } else {
+                System.out.println ("Point does not belong to the area.");
+            }
+        }
+
+        // Finally, some useful things we didn't use in this example:
+        //
+        //   Ellipse2D.Double ellipse = new Ellipse2D.Double (double x, double y, 
+        //                                                    double w, double h);
+        //
+        //     creates an ellipse inscribed in box with bottom-left corner (x,y)
+        //     and upper-right corner (x+y,w+h)
+        // 
+        //   Rectangle2D.Double rect = new Rectangle2D.Double (double x, double y, 
+        //                                                     double w, double h);
+        //
+        //     creates a box with bottom-left corner (x,y) and upper-right 
+        //     corner (x+y,w+h)
+        //
+        // Each of these can be embedded in an Area object (e.g., new Area (rect)).
+
+    }
+}
+```
+### LogLan.java
+```java
+// Code which demonstrates the use of Java's regular expression libraries.
+// This is a solution for 
+//
+//   Loglan: a logical language
+//   http://acm.uva.es/p/v1/134.html
+//
+// In this problem, we are given a regular language, whose rules can be
+// inferred directly from the code.  For each sentence in the input, we must
+// determine whether the sentence matches the regular expression or not.  The
+// code consists of (1) building the regular expression (which is fairly
+// complex) and (2) using the regex to match sentences.
+
+import java.util.*;
+import java.util.regex.*;
+
+public class LogLan {
+
+    public static String BuildRegex (){
+	String space = " +";
+
+	String A = "([aeiou])";
+	String C = "([a-z&&[^aeiou]])";
+	String MOD = "(g" + A + ")";
+	String BA = "(b" + A + ")";
+	String DA = "(d" + A + ")";
+	String LA = "(l" + A + ")";
+	String NAM = "([a-z]*" + C + ")";
+	String PREDA = "(" + C + C + A + C + A + "|" + C + A + C + C + A + ")";
+
+	String predstring = "(" + PREDA + "(" + space + PREDA + ")*)";
+	String predname = "(" + LA + space + predstring + "|" + NAM + ")";
+	String preds = "(" + predstring + "(" + space + A + space + predstring + ")*)";
+	String predclaim = "(" + predname + space + BA + space + preds + "|" + DA + space +
+            preds + ")";
+	String verbpred = "(" + MOD + space + predstring + ")";
+	String statement = "(" + predname + space + verbpred + space + predname + "|" + 
+            predname + space + verbpred + ")";
+	String sentence = "(" + statement + "|" + predclaim + ")";
+
+	return "^" + sentence + "$";
+    }
+
+    public static void main (String args[]){
+
+	String regex = BuildRegex();
+	Pattern pattern = Pattern.compile (regex);
+	
+	Scanner s = new Scanner(System.in);
+	while (true) {
+
+            // In this problem, each sentence consists of multiple lines, where the last 
+	    // line is terminated by a period.  The code below reads lines until
+	    // encountering a line whose final character is a '.'.  Note the use of
+            //
+            //    s.length() to get length of string
+            //    s.charAt() to extract characters from a Java string
+            //    s.trim() to remove whitespace from the beginning and end of Java string
+            //
+            // Other useful String manipulation methods include
+            //
+            //    s.compareTo(t) < 0 if s < t, lexicographically
+            //    s.indexOf("apple") returns index of first occurrence of "apple" in s
+            //    s.lastIndexOf("apple") returns index of last occurrence of "apple" in s
+            //    s.replace(c,d) replaces occurrences of character c with d
+            //    s.startsWith("apple) returns (s.indexOf("apple") == 0)
+            //    s.toLowerCase() / s.toUpperCase() returns a new lower/uppercased string
+            //
+            //    Integer.parseInt(s) converts s to an integer (32-bit)
+            //    Long.parseLong(s) converts s to a long (64-bit)
+            //    Double.parseDouble(s) converts s to a double
+            
+	    String sentence = "";
+	    while (true){
+		sentence = (sentence + " " + s.nextLine()).trim();
+		if (sentence.equals("#")) return;
+		if (sentence.charAt(sentence.length()-1) == '.') break;		
+	    }
+
+            // now, we remove the period, and match the regular expression
+
+            String removed_period = sentence.substring(0, sentence.length()-1).trim();
+	    if (pattern.matcher (removed_period).find()){
+		System.out.println ("Good");
+	    } else {
+		System.out.println ("Bad!");
+	    }
+	}
+    }
+}
+```
+### MaxFlow.java
+```java
+// Fattest path network flow algorithm using an adjacency matrix.
+//
+// Running time: O(|E|^2 log (|V| * U), where U is the largest
+//               capacity of any edge.  If you replace the 'fattest
+//               path' search with a minimum number of edges search,
+//               the running time becomes O(|E|^2 |V|).
+//
+// INPUT: cap -- a matrix such that cap[i][j] is the capacity of
+//               a directed edge from node i to node j
+//
+//               * Note that it is legitimate to create an i->j
+//                 edge without a corresponding j->i edge.
+//
+//               * Note that for an undirected edge, set
+//                 both cap[i][j] and cap[j][i] to the capacity of
+//                 the undirected edge.
+//
+//        source -- starting node
+//        sink -- ending node
+//
+// OUTPUT: value of maximum flow; also, the flow[][] matrix will
+//         contain both positive and negative integers -- if you
+//         want the actual flow assignments, look at the
+//         *positive* flow values only.
+//
+// To use this, create a MaxFlow object, and call it like this:
+//
+//   MaxFlow nf;
+//   int maxflow = nf.getMaxFlow(cap,source,sink);
+
+import java.util.*;
+
+public class MaxFlow {
+    boolean found[];
+    int N, cap[][], flow[][], dad[], dist[];
+
+    boolean searchFattest(int source, int sink) {
+	Arrays.fill(found, false);
+	Arrays.fill(dist, 0);
+	dist[source] = Integer.MAX_VALUE / 2;
+        while (source != N) {
+            int best = N;
+            found[source] = true;
+            if (source == sink) break;
+            for (int k = 0; k < N; k++) {
+		if (found[k]) continue;
+		int possible = Math.min(cap[source][k] - flow[source][k], dist[source]);
+		if (dist[k] < possible) {
+		    dist[k] = possible;
+		    dad[k] = source; 
+		}
+                if (dist[k] > dist[best]) best = k;
+	    }
+            source = best;
+        }
+        return found[sink];
+    }
+
+    boolean searchShortest(int source, int sink) {
+	Arrays.fill(found, false);
+	Arrays.fill(dist, Integer.MAX_VALUE/2);
+	dist[source] = 0;
+        while (source != N) {
+            int best = N;
+            found[source] = true;
+            if (source == sink) break;
+            for (int k = 0; k < N; k++) {
+		if (found[k]) continue;
+                if (cap[source][k] - flow[source][k] > 0) {
+                    if (dist[k] > dist[source] + 1){
+                        dist[k] = dist[source] + 1;
+                        dad[k] = source;
+                    }
+                }
+                if (dist[k] < dist[best]) best = k;
+	    }
+            source = best;
+        }
+        return found[sink];
+    }
+
+    public int getMaxFlow(int cap[][], int source, int sink) {
+        this.cap = cap;
+        N = cap.length;
+        found = new boolean[N];
+        flow = new int[N][N];
+        dist = new int[N+1];
+        dad = new int[N];
+    
+        int totflow = 0;
+        while (searchFattest(source, sink)) {
+            int amt = Integer.MAX_VALUE;
+            for (int x = sink; x != source; x = dad[x])
+                amt = Math.min(amt, cap[dad[x]][x] - flow[dad[x]][x]);
+            for (int x = sink; x != source; x = dad[x]) {
+                flow[dad[x]][x] += amt;
+                flow[x][dad[x]] -= amt;
+            }
+            totflow += amt;
+        }
+
+        return totflow;
+    }
+  
+    public static void main(String args[]) {
+	MaxFlow flow = new MaxFlow();
+	int cap[][] = {{0, 3, 4, 5, 0},
+		       {0, 0, 2, 0, 0},
+		       {0, 0, 0, 4, 1},
+		       {0, 0, 0, 0, 10},
+		       {0 ,0, 0, 0, 0}};
+
+	// should print out "10"
+
+	System.out.println(flow.getMaxFlow(cap, 0, 4));
+    }
+}
+```
+### MinCostMaxFlow.java
+```java
+// Min cost max flow algorithm using an adjacency matrix.  If you
+// want just regular max flow, setting all edge costs to 1 gives
+// running time O(|E|^2 |V|).
+//
+// Running time: O(min(|V|^2 * totflow, |V|^3 * totcost))
+//
+// INPUT: cap -- a matrix such that cap[i][j] is the capacity of
+//               a directed edge from node i to node j
+//
+//        cost -- a matrix such that cost[i][j] is the (positive)
+//                cost of sending one unit of flow along a 
+//                directed edge from node i to node j
+//
+//        source -- starting node
+//        sink -- ending node
+//
+// OUTPUT: max flow and min cost; the matrix flow will contain
+//         the actual flow values (note that unlike in the MaxFlow
+//         code, you don't need to ignore negative flow values -- there
+//         shouldn't be any)
+//
+// To use this, create a MinCostMaxFlow object, and call it like this:
+//
+//   MinCostMaxFlow nf;
+//   int maxflow = nf.getMaxFlow(cap,cost,source,sink);
+
+import java.util.*;
+
+public class MinCostMaxFlow {
+    boolean found[];
+    int N, cap[][], flow[][], cost[][], dad[], dist[], pi[];
+    
+    static final int INF = Integer.MAX_VALUE / 2 - 1;
+    
+    boolean search(int source, int sink) {
+	Arrays.fill(found, false);
+	Arrays.fill(dist, INF);
+	dist[source] = 0;
+
+	while (source != N) {
+	    int best = N;
+	    found[source] = true;
+	    for (int k = 0; k < N; k++) {
+		if (found[k]) continue;
+		if (flow[k][source] != 0) {
+		    int val = dist[source] + pi[source] - pi[k] - cost[k][source];
+		    if (dist[k] > val) {
+			dist[k] = val;
+			dad[k] = source;
+		    }
+		}
+		if (flow[source][k] < cap[source][k]) {
+		    int val = dist[source] + pi[source] - pi[k] + cost[source][k];
+		    if (dist[k] > val) {
+			dist[k] = val;
+			dad[k] = source;
+		    }
+		}
+		
+		if (dist[k] < dist[best]) best = k;
+	    }
+	    source = best;
+	}
+	for (int k = 0; k < N; k++)
+	    pi[k] = Math.min(pi[k] + dist[k], INF);
+	return found[sink];
+    }
+    
+    
+    int[] getMaxFlow(int cap[][], int cost[][], int source, int sink) {
+	this.cap = cap;
+	this.cost = cost;
+	
+	N = cap.length;
+        found = new boolean[N];
+        flow = new int[N][N];
+        dist = new int[N+1];
+        dad = new int[N];
+        pi = new int[N];
+	
+	int totflow = 0, totcost = 0;
+	while (search(source, sink)) {
+	    int amt = INF;
+	    for (int x = sink; x != source; x = dad[x])
+		amt = Math.min(amt, flow[x][dad[x]] != 0 ? flow[x][dad[x]] :
+                       cap[dad[x]][x] - flow[dad[x]][x]);
+	    for (int x = sink; x != source; x = dad[x]) {
+		if (flow[x][dad[x]] != 0) {
+		    flow[x][dad[x]] -= amt;
+		    totcost -= amt * cost[x][dad[x]];
+		} else {
+		    flow[dad[x]][x] += amt;
+		    totcost += amt * cost[dad[x]][x];
+		}
+	    }
+	    totflow += amt;
+	}
+	
+	return new int[]{ totflow, totcost };
+    }
+  
+    public static void main (String args[]){
+        MinCostMaxFlow flow = new MinCostMaxFlow();
+        int cap[][] = {{0, 3, 4, 5, 0},
+                       {0, 0, 2, 0, 0},
+                       {0, 0, 0, 4, 1},
+                       {0, 0, 0, 0, 10},
+                       {0, 0, 0, 0, 0}};
+
+        int cost1[][] = {{0, 1, 0, 0, 0},
+                         {0, 0, 0, 0, 0},
+                         {0, 0, 0, 0, 0},
+                         {0, 0, 0, 0, 0},
+                         {0, 0, 0, 0, 0}};
+
+        int cost2[][] = {{0, 0, 1, 0, 0},
+                         {0, 0, 0, 0, 0},
+                         {0, 0, 0, 0, 0},
+                         {0, 0, 0, 0, 0},
+                         {0, 0, 0, 0, 0}};
+        
+        // should print out:
+        //   10 1
+        //   10 3
+
+        int ret1[] = flow.getMaxFlow(cap, cost1, 0, 4);
+        int ret2[] = flow.getMaxFlow(cap, cost2, 0, 4);
+        
+        System.out.println (ret1[0] + " " + ret1[1]);
+        System.out.println (ret2[0] + " " + ret2[1]);
+    }
+}
+```
+### SegmentTreeLazy.java
+```java
+public class SegmentTreeRangeUpdate {
+	public long[] leaf;
+	public long[] update;
+	public int origSize;
+	public SegmentTreeRangeUpdate(int[] list)	{
+		origSize = list.length;
+		leaf = new long[4*list.length];
+		update = new long[4*list.length];
+		build(1,0,list.length-1,list);
+	}
+	public void build(int curr, int begin, int end, int[] list)	{
+		if(begin == end)
+			leaf[curr] = list[begin];
+		else	{
+			int mid = (begin+end)/2;
+			build(2 * curr, begin, mid, list);
+			build(2 * curr + 1, mid+1, end, list);
+			leaf[curr] = leaf[2*curr] + leaf[2*curr+1];
+		}
+	}
+	public void update(int begin, int end, int val)	{
+		update(1,0,origSize-1,begin,end,val);
+	}
+	public void update(int curr,  int tBegin, int tEnd, int begin, int end, int val)	{
+		if(tBegin >= begin && tEnd <= end)
+			update[curr] += val;
+		else	{
+			leaf[curr] += (Math.min(end,tEnd)-Math.max(begin,tBegin)+1) * val;
+			int mid = (tBegin+tEnd)/2;
+			if(mid >= begin && tBegin <= end)
+				update(2*curr, tBegin, mid, begin, end, val);
+			if(tEnd >= begin && mid+1 <= end)
+				update(2*curr+1, mid+1, tEnd, begin, end, val);
+		}
+	}
+	public long query(int begin, int end)	{
+		return query(1,0,origSize-1,begin,end);
+	}
+	public long query(int curr, int tBegin, int tEnd, int begin, int end)	{
+		if(tBegin >= begin && tEnd <= end)	{
+			if(update[curr] != 0)	{
+				leaf[curr] += (tEnd-tBegin+1) * update[curr];
+				if(2*curr < update.length){
+					update[2*curr] += update[curr];
+					update[2*curr+1] += update[curr];
+				}
+				update[curr] = 0;
+			}
+			return leaf[curr];
+		}
+		else	{
+			leaf[curr] += (tEnd-tBegin+1) * update[curr];
+			if(2*curr < update.length){
+				update[2*curr] += update[curr];
+				update[2*curr+1] += update[curr];
+			}
+			update[curr] = 0;
+			int mid = (tBegin+tEnd)/2;
+			long ret = 0;
+			if(mid >= begin && tBegin <= end)
+				ret += query(2*curr, tBegin, mid, begin, end);
+			if(tEnd >= begin && mid+1 <= end)
+				ret += query(2*curr+1, mid+1, tEnd, begin, end);
+			return ret;
+		}
+	}
 }
 ```
 
