@@ -1,65 +1,4 @@
-/* The info will definitely need to be organized */
-### VimrcSettings:
-```
-:set tabstop=4
-:set softtabstop=4
-:set shiftwidth=4
-:set expandtab
-:set nu
-:syntax enable
 
-//sets cntl+m to toggle nu and rnu
-function! NumberToggle()
-    if(&relativenumber == 1)
-        set number
-    else
-        set relativenumber
-    endif
-endfunc
-
-nnoremap <C-m> :call NumberToggle()<cr>
-```
-
-## Templates:
-```cpp
-//sstream template for parsing input
-#include <iostream>
-#include <string>
-#include <vector>
-#include <sstream>
-using namespace std;
-
-/* add func type */ solution(/* fill in parameters */)
-{
-    return /* add return value */; 
-}
-
-int main()
-{
-    int tests = 0;
-    /* add input type */ input_values = /* init */;
-    string input_string = "";
-    vector</* add input type */> input_vector;
-
-    /* add necessary variables */
-
-    cin >> tests;
-    for(int i = 0; i < tests; i++)
-    {
-        cin.ignore();
-        getline(cin, input_string);
-        istringstream iss(input_string);
-
-        while(iss >> input_values)
-            input_vector.push_back(input_values); 
-
-        /* add necessary code */
-        cout << solution(/* fill in parameters */) << endl; 
-        input_vector.clear();
-    }
-    return 0;
-}
-```
 ## Algorithms:
 
 ### Breadth First Search(BFS)
@@ -107,6 +46,7 @@ void BFS(int start)
   }
 }
 ```
+
 ### Depth First Search(DFS)
 ```cpp  
 #include <vector>
@@ -156,77 +96,83 @@ void DFS()
   }
 }
 ```
-### FastDijkstra.cc
+
+### Dijkstra
 ```cpp
-// Implementation of Dijkstra's algorithm using adjacency lists
-// and priority queue for efficiency.
-//
-// Running time: O(|E| log |V|)
+// Single Source Shortest Path
+// Inputs:
+//   AdjacencyList
+//   Start
 
 #include <queue>
-#include <cstdio>
+#include <vector>
+#include <list>
+#include <climits>
 
 using namespace std;
-const int INF = 2000000000;
-typedef pair<int, int> PII;
 
-int main() {
+struct edge
+{
+  int to;
+  int weight;
+};
 
-	int N, s, t;
-	scanf("%d%d%d", &N, &s, &t);
-	vector<vector<PII> > edges(N);
-	for (int i = 0; i < N; i++) {
-		int M;
-		scanf("%d", &M);
-		for (int j = 0; j < M; j++) {
-			int vertex, dist;
-			scanf("%d%d", &vertex, &dist);
-			edges[i].push_back(make_pair(dist, vertex)); // note order of arguments here
-		}
-	}
+struct node
+{
+  int index;
+  int cost;
+};
 
-	// use priority queue in which top element has the "smallest" priority
-	priority_queue<PII, vector<PII>, greater<PII> > Q;
-	vector<int> dist(N, INF), dad(N, -1);
-	Q.push(make_pair(0, s));
-	dist[s] = 0;
-	while (!Q.empty()) {
-		PII p = Q.top();
-		Q.pop();
-		int here = p.second;
-		if (here == t) break;
-		if (dist[here] != p.first) continue;
+struct compare
+{
+  bool operator() (node a, node b)
+  {
+    return a.cost > b.cost;
+  }
+};
 
-		for (vector<PII>::iterator it = edges[here].begin(); it != edges[here].end(); it++) {
-			if (dist[here] + it->first < dist[it->second]) {
-				dist[it->second] = dist[here] + it->first;
-				dad[it->second] = here;
-				Q.push(make_pair(dist[it->second], it->second));
-			}
-		}
-	}
+vector<list<edge>> adjacencyList;
+vector<int> dist;
+vector<int> parent;
 
-	printf("%d\n", dist[t]);
-	if (dist[t] < INF)
-		for (int i = t; i != -1; i = dad[i])
-			printf("%d%c", i, (i == s ? '\n' : ' '));
-	return 0;
+void Dijkstra(int start)
+{
+  priority_queue<node, vector<node>, compare> Q;
+  for(int & i : dist)
+  {
+    i = INT_MAX;
+  }
+  node source;
+  source.index = start;
+  source.cost = 0;
+  dist[start] = 0;
+  parent[start] = -1;
+  Q.push(source);
+  vector<bool> finished(adjacencyList.size(), false);
+
+  node current;
+  while(!Q.empty())
+  {
+    current = Q.top();
+    Q.pop();
+    node temp;
+    for(edge i : adjacencyList[current.index])
+    {
+      if(!finished[i.to] && dist[i.to] > dist[current.index] + i.weight)
+      {
+        dist[i.to] = dist[current.index] + i.weight;
+        temp.index = i.to;
+        temp.cost = dist[i.to];
+        parent[i.to] = current.index;
+        Q.push(temp);
+      }
+    }
+    finished[current.index] = true;
+  }
 }
-
-/*
-Sample input:
-5 0 4
-2 1 2 3 1
-2 2 4 4 5
-3 1 4 3 3 4 1
-2 0 1 2 3
-2 1 5 2 1
-Expected:
-5
-4 2 3 0
-*/
 ```
-### DijkstraFloyd.cc
+
+### Floyd-Warshall
 ```cpp
 #include <iostream>
 #include <queue>
@@ -241,37 +187,6 @@ typedef vector<VT> VVT;
 
 typedef vector<int> VI;
 typedef vector<VI> VVI;
-
-// This function runs Dijkstra's algorithm for single source
-// shortest paths.  No negative cycles allowed!
-//
-// Running time: O(|V|^2)
-//
-//   INPUT:   start, w[i][j] = cost of edge from i to j
-//   OUTPUT:  dist[i] = min weight path from start to i
-//            prev[i] = previous node on the best path from the
-//                      start node   
-
-void Dijkstra (const VVT &w, VT &dist, VI &prev, int start){
-  int n = w.size();
-  VI found (n);
-  prev = VI(n, -1);
-  dist = VT(n, 1000000000);
-  dist[start] = 0;
-  
-  while (start != -1){
-    found[start] = true;
-    int best = -1;
-    for (int k = 0; k < n; k++) if (!found[k]){
-      if (dist[k] > dist[start] + w[start][k]){
-        dist[k] = dist[start] + w[start][k];
-        prev[k] = start;
-      }
-      if (best == -1 || dist[k] < dist[best]) best = k;
-    }
-    start = best;    
-  }
-}
 
 // This function runs the Floyd-Warshall algorithm for all-pairs
 // shortest paths.  Also handles negative edge weights.  Returns true
@@ -305,49 +220,6 @@ bool FloydWarshall (VVT &w, VVI &prev){
 }
 ```
 
-### BIT.cc
-```cpp
-#include <iostream>
-using namespace std;
-
-#define LOGSZ 17
-
-int tree[(1<<LOGSZ)+1];
-int N = (1<<LOGSZ);
-
-// add v to value at x
-void set(int x, int v) {
-  while(x <= N) {
-    tree[x] += v;
-    x += (x & -x);
-  }
-}
-
-// get cumulative sum up to and including x
-int get(int x) {
-  int res = 0;
-  while(x) {
-    res += tree[x];
-    x -= (x & -x);
-  }
-  return res;
-}
-
-// get largest value with cumulative sum less than or equal to x;
-// for smallest, pass x-1 and add 1 to result
-int getind(int x) {
-  int idx = 0, mask = N;
-  while(mask && idx < N) {
-    int t = idx + mask;
-    if(x >= tree[t]) {
-      idx = t;
-      x -= tree[t];
-    }
-    mask >>= 1;
-  }
-  return idx;
-}
-```
 ### BellmanFord.cc
 ```cpp
 // This function runs the Bellman-Ford algorithm for single source
@@ -909,31 +781,7 @@ int main()
 
 // END CUT
 ```
-### EmacsSettings.txt
-```
-;; Jack's .emacs file
 
-(global-set-key "\C-z"	    'scroll-down)
-(global-set-key "\C-x\C-p"  '(lambda() (interactive) (other-window -1)) )
-(global-set-key "\C-x\C-o"  'other-window)
-(global-set-key "\C-x\C-n"  'other-window)
-(global-set-key "\M-."      'end-of-buffer)
-(global-set-key "\M-,"      'beginning-of-buffer)
-(global-set-key "\M-g"      'goto-line)
-(global-set-key "\C-c\C-w"  'compare-windows)
-
-(tool-bar-mode 0)
-(scroll-bar-mode -1)
-
-(global-font-lock-mode 1)
-(show-paren-mode 1)
-
-(setq-default c-default-style "linux")
-
-(custom-set-variables
- '(compare-ignore-whitespace t)
-)
-```
 ### Euclid
 ```cpp
 // This is a collection of useful code for solving problems that
