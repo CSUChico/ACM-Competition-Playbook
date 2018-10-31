@@ -1,225 +1,6 @@
 
 ## Algorithms:
 
-### Breadth First Search(BFS)
-```cpp  
-#include <list>
-#include <vector>
-#include <queue>
-#include <climits>
-
-using namespace std;
-
-vector<list<int>> adjacencyList;
-vector<int> dist;
-vector<int> parent;
-
-void BFS(int start)
-{
-  vector<char> color(adjacencyList.size());
-  for(unsigned int i = 0; i < adjacencyList.size(); i++)
-  {
-    color[i] = 'w';
-    dist[i] = INT_MAX;
-    parent[i] = -1;
-  }
-  color[start] = 'g';
-  dist[start] = 0;
-  queue<int> Q;
-  Q.push(start);
-  int current;
-  while(!Q.empty())
-  {
-    current = Q.front();
-    Q.pop();
-    for(int i : adjacencyList[current])
-    {
-      if(color[i] == 'w')
-      {
-        color[i] = 'g';
-        dist[i] = dist[current] + 1;
-        parent[i] = current;
-        Q.push(i);
-      }
-    }
-    color[current] = 'b';
-  }
-}
-```
-
-### Depth First Search(DFS)
-```cpp  
-#include <vector>
-#include <list>
-
-using namespace std;
-
-vector<list<int>> adjacencyList;
-vector<int> parent;
-vector<int> startTime;
-vector<int> finishTime;
-vector<char> color;
-
-
-void DFS_Visit(int current, int & time)
-{
-  color[current] = 'g';
-  time++;
-  startTime[current] = time;
-  for(int i : adjacencyList[current])
-  {
-    if(color[i] == 'w')
-    {
-      parent[i] = current;
-      DFS_Visit(i, time);
-    }
-  }
-  color[current] = 'b';
-  time++;
-  finishTime[current] = time;
-}
-
-void DFS()
-{
-  for(int i = 0; i < adjacencyList.size(); i++)
-  {
-    color[i] = 'w';
-    parent[i] = -1;
-  }
-  int time = 0;
-  for(int i = 0; i < adjacencyList.size(); i++)
-  {
-    if(color[i] == 'w')
-    {
-      DFS_Visit(i, time);
-    }
-  }
-}
-```
-
-### Dijkstra
-```cpp
-// Single Source Shortest Path
-// Inputs:
-//   AdjacencyList
-//   Start
-
-#include <queue>
-#include <vector>
-#include <list>
-#include <climits>
-
-using namespace std;
-
-struct edge
-{
-  int to;
-  int weight;
-};
-
-struct node
-{
-  int index;
-  int cost;
-};
-
-struct compare
-{
-  bool operator() (node a, node b)
-  {
-    return a.cost > b.cost;
-  }
-};
-
-vector<list<edge>> adjacencyList;
-vector<int> dist;
-vector<int> parent;
-
-void Dijkstra(int start)
-{
-  priority_queue<node, vector<node>, compare> Q;
-  for(int & i : dist)
-  {
-    i = INT_MAX;
-  }
-  node source;
-  source.index = start;
-  source.cost = 0;
-  dist[start] = 0;
-  parent[start] = -1;
-  Q.push(source);
-  vector<bool> finished(adjacencyList.size(), false);
-
-  node current;
-  while(!Q.empty())
-  {
-    current = Q.top();
-    Q.pop();
-    node temp;
-    for(edge i : adjacencyList[current.index])
-    {
-      if(!finished[i.to] && dist[i.to] > dist[current.index] + i.weight)
-      {
-        dist[i.to] = dist[current.index] + i.weight;
-        temp.index = i.to;
-        temp.cost = dist[i.to];
-        parent[i.to] = current.index;
-        Q.push(temp);
-      }
-    }
-    finished[current.index] = true;
-  }
-}
-```
-
-### Floyd-Warshall
-```cpp
-#include <iostream>
-#include <queue>
-#include <cmath>
-#include <vector>
-
-using namespace std;
-
-typedef double T;
-typedef vector<T> VT;
-typedef vector<VT> VVT;
-
-typedef vector<int> VI;
-typedef vector<VI> VVI;
-
-// This function runs the Floyd-Warshall algorithm for all-pairs
-// shortest paths.  Also handles negative edge weights.  Returns true
-// if a negative weight cycle is found.
-//
-// Running time: O(|V|^3)
-//
-//   INPUT:  w[i][j] = weight of edge from i to j
-//   OUTPUT: w[i][j] = shortest path from i to j
-//           prev[i][j] = node before j on the best path starting at i
-
-bool FloydWarshall (VVT &w, VVI &prev){
-  int n = w.size();
-  prev = VVI (n, VI(n, -1));
-  
-  for (int k = 0; k < n; k++){
-    for (int i = 0; i < n; i++){
-      for (int j = 0; j < n; j++){
-        if (w[i][j] > w[i][k] + w[k][j]){
-          w[i][j] = w[i][k] + w[k][j];
-          prev[i][j] = k;
-        }
-      }
-    }
-  }
- 
-  // check for negative weight cycles
-  for(int i=0;i<n;i++)
-    if (w[i][i] < 0) return false;
-  return true;
-}
-```
-
 ### BellmanFord.cc
 ```cpp
 // This function runs the Bellman-Ford algorithm for single source
@@ -272,6 +53,53 @@ bool BellmanFord (const VVT &w, VT &dist, VI &prev, int start){
   return true;
 }
 ```
+
+### Breadth First Search(BFS)
+```cpp  
+#include <list>
+#include <vector>
+#include <queue>
+#include <climits>
+
+using namespace std;
+
+vector<list<int>> adjacencyList;
+vector<int> dist;
+vector<int> parent;
+
+void BFS(int start)
+{
+  vector<char> color(adjacencyList.size());
+  for(unsigned int i = 0; i < adjacencyList.size(); i++)
+  {
+    color[i] = 'w';
+    dist[i] = INT_MAX;
+    parent[i] = -1;
+  }
+  color[start] = 'g';
+  dist[start] = 0;
+  queue<int> Q;
+  Q.push(start);
+  int current;
+  while(!Q.empty())
+  {
+    current = Q.front();
+    Q.pop();
+    for(int i : adjacencyList[current])
+    {
+      if(color[i] == 'w')
+      {
+        color[i] = 'g';
+        dist[i] = dist[current] + 1;
+        parent[i] = current;
+        Q.push(i);
+      }
+    }
+    color[current] = 'b';
+  }
+}
+```
+
 ### CSP.cc
 ```cpp
 // Constraint satisfaction problems
@@ -538,6 +366,7 @@ int main() {
 
 // END CUT
 ```
+
 ### Dates.cc
 ```cpp
 // Routines for performing computations on dates.  In these routines,
@@ -665,6 +494,132 @@ int main()
     return 0;
 }
 ```
+
+### Depth First Search(DFS)
+```cpp  
+#include <vector>
+#include <list>
+
+using namespace std;
+
+vector<list<int>> adjacencyList;
+vector<int> parent;
+vector<int> startTime;
+vector<int> finishTime;
+vector<char> color;
+
+
+void DFS_Visit(int current, int & time)
+{
+  color[current] = 'g';
+  time++;
+  startTime[current] = time;
+  for(int i : adjacencyList[current])
+  {
+    if(color[i] == 'w')
+    {
+      parent[i] = current;
+      DFS_Visit(i, time);
+    }
+  }
+  color[current] = 'b';
+  time++;
+  finishTime[current] = time;
+}
+
+void DFS()
+{
+  for(int i = 0; i < adjacencyList.size(); i++)
+  {
+    color[i] = 'w';
+    parent[i] = -1;
+  }
+  int time = 0;
+  for(int i = 0; i < adjacencyList.size(); i++)
+  {
+    if(color[i] == 'w')
+    {
+      DFS_Visit(i, time);
+    }
+  }
+}
+```
+
+### Dijkstra
+```cpp
+// Single Source Shortest Path
+// Inputs:
+//   AdjacencyList
+//   Start
+
+#include <queue>
+#include <vector>
+#include <list>
+#include <climits>
+
+using namespace std;
+
+struct edge
+{
+  int to;
+  int weight;
+};
+
+struct node
+{
+  int index;
+  int cost;
+};
+
+struct compare
+{
+  bool operator() (node a, node b)
+  {
+    return a.cost > b.cost;
+  }
+};
+
+vector<list<edge>> adjacencyList;
+vector<int> dist;
+vector<int> parent;
+
+void Dijkstra(int start)
+{
+  priority_queue<node, vector<node>, compare> Q;
+  for(int & i : dist)
+  {
+    i = INT_MAX;
+  }
+  node source;
+  source.index = start;
+  source.cost = 0;
+  dist[start] = 0;
+  parent[start] = -1;
+  Q.push(source);
+  vector<bool> finished(adjacencyList.size(), false);
+
+  node current;
+  while(!Q.empty())
+  {
+    current = Q.top();
+    Q.pop();
+    node temp;
+    for(edge i : adjacencyList[current.index])
+    {
+      if(!finished[i.to] && dist[i.to] > dist[current.index] + i.weight)
+      {
+        dist[i.to] = dist[current.index] + i.weight;
+        temp.index = i.to;
+        temp.cost = dist[i.to];
+        parent[i.to] = current.index;
+        Q.push(temp);
+      }
+    }
+    finished[current.index] = true;
+  }
+}
+```
+
 ### Dinic.cc
 ```cpp
 // Adjacency list implementation of Dinic's blocking flow algorithm.
@@ -985,6 +940,7 @@ void add_edge(int a, int b)
 	itb->reverse_edge = ita;
 }
 ```
+
 ### FFT.cc
 ```cpp
 // Convolution using the fast Fourier transform (FFT).
@@ -1314,6 +1270,54 @@ int main()
   }
 }
 ```
+### Floyd-Warshall
+```cpp
+#include <iostream>
+#include <queue>
+#include <cmath>
+#include <vector>
+
+using namespace std;
+
+typedef double T;
+typedef vector<T> VT;
+typedef vector<VT> VVT;
+
+typedef vector<int> VI;
+typedef vector<VI> VVI;
+
+// This function runs the Floyd-Warshall algorithm for all-pairs
+// shortest paths.  Also handles negative edge weights.  Returns true
+// if a negative weight cycle is found.
+//
+// Running time: O(|V|^3)
+//
+//   INPUT:  w[i][j] = weight of edge from i to j
+//   OUTPUT: w[i][j] = shortest path from i to j
+//           prev[i][j] = node before j on the best path starting at i
+
+bool FloydWarshall (VVT &w, VVI &prev){
+  int n = w.size();
+  prev = VVI (n, VI(n, -1));
+  
+  for (int k = 0; k < n; k++){
+    for (int i = 0; i < n; i++){
+      for (int j = 0; j < n; j++){
+        if (w[i][j] > w[i][k] + w[k][j]){
+          w[i][j] = w[i][k] + w[k][j];
+          prev[i][j] = k;
+        }
+      }
+    }
+  }
+ 
+  // check for negative weight cycles
+  for(int i=0;i<n;i++)
+    if (w[i][i] < 0) return false;
+  return true;
+}
+```
+
 ### GaussJordan.cc
 ```cpp
 // Gauss-Jordan elimination with full pivoting.
@@ -3921,6 +3925,7 @@ bool TopologicalSort (const VVI &w, VI &order){
   return (order.size() == n);
 }
 ```
+
 ### UnionFind.cc
 ```cpp
 #include <iostream>
@@ -3940,6 +3945,7 @@ int main()
 	return 0;
 }
 ```
+
 ### Splay
 ```cpp
 #include <cstdio>
