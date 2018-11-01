@@ -3180,6 +3180,39 @@ int main() {
 }
 // END CUT
 ```
+### Minimax.cc
+```
+template<typename T>
+void child_states(const state& s, const bool maxing, T func) {
+    for(/* each child state of s, for player `maxing`'s turn */)
+        if (func(child))
+            return;
+}
+// with alpha/beta pruning
+int minimax(const state& s, int alpha, int beta, const bool maxing) {
+    int v;
+    if (maxing) {
+        v = INT_MIN;
+        child_states(s, maxing, [&](const state& child) {
+            v = max(v, minimax(child, alpha, beta, false));
+            alpha = max(alpha, v);
+            return alpha >= beta;
+        });
+        if (v == INT_MIN)  // no child states
+            return /* final score */;
+    } else {
+        v = INT_MAX;
+        child_states(s, maxing, [&](const state& child) {
+            v = min(v, minimax(b, alpha, beta, true));
+            beta = min(beta, v);
+            return alpha >= beta;
+        });
+        if (v == INT_MAX)  // no child states
+            return /* final score */;
+    }
+    return v;
+}
+```
 ### Prim.cc
 ```cpp
 // This function runs Prim's algorithm for constructing minimum
